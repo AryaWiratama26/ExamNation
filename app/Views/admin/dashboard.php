@@ -74,6 +74,39 @@
                 <canvas id="ujianChart" height="100"></canvas>
             </div>
         </div>
+
+        <h4 class="mt-5">📄 Rekap Hasil Ujian dari Google Spreadsheet</h4>
+
+        <?php if (empty($rows) || count($rows) <= 1): ?>
+            <div class="alert alert-info">Belum ada data yang masuk ke spreadsheet.</div>
+        <?php else: ?>
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped mt-3">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Nama</th>
+                            <th>Judul Ujian</th>
+                            <th>Nilai</th>
+                            <th>Tanggal Mengerjakan</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php for ($i = 1; $i < count($rows); $i++): ?>
+                            <tr>
+                                <td><?= esc($rows[$i][0] ?? '-') ?></td>
+                                <td><?= esc($rows[$i][1] ?? '-') ?></td>
+                                <td><?= esc($rows[$i][2] ?? '-') ?></td>
+                                <td><?= esc($rows[$i][3] ?? '-') ?></td>
+                            </tr>
+                        <?php endfor; ?>
+                    </tbody>
+                </table>
+            </div>
+        <?php endif; ?>
+        <a href="https://docs.google.com/spreadsheets/d/1W6LodJZ8FCgQfrSDJZ8WT3KYyFbRQ3C-EVHKaIX3ZAE/export?format=csv"
+            class="btn btn-outline-primary" target="_blank">
+            📄 Download CSV
+        </a>
     </div>
 
     <!-- Script JS -->

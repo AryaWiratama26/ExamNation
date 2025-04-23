@@ -77,6 +77,13 @@ h3 {
     transition: background 0.3s ease;
 }
 
+.button-history{
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 35px 350px;
+    
+}
+
 .btn:hover {
     background: linear-gradient(to right, #7abed9, #4f90a5);
 }
