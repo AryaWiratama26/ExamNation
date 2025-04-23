@@ -21,7 +21,7 @@
 - 👨‍🏫 **Admin Panel** untuk kelola user, ujian, dan soal
 - 📝 **Tambah & Edit Soal Ujian**
 - ⏳ **Timer Otomatis** untuk setiap ujian
-- 📈 **Rekap Nilai** peserta ujian
+- 📈 **Rekap Nilai** Peserta yang sudah selesai otomatis terekap pada Spreadsheet
 - 🧪 **Multiple Choice Questions (MCQ)**
 
 ---
