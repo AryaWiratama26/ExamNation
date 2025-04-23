@@ -5,6 +5,7 @@ use App\Models\ExamModel;
 use App\Models\UserModel;
 use App\Models\QuestionModel;
 use Config\Database;
+use App\Libraries\SpreadsheetWriter;
 
 class Admin extends BaseController
 {
@@ -15,7 +16,14 @@ class Admin extends BaseController
     }
     public function dashboard()
     {
-        return view('admin/dashboard');
+        $spreadsheet = new SpreadsheetWriter();
+        $rows = $spreadsheet->getAllRows();
+    
+        // Tambahkan ke data yang dilempar ke view
+        return view('admin/dashboard', [
+            // data lain kamu tetap sertakan
+            'rows' => $rows
+        ]); 
     }
 
     public function manageExam()

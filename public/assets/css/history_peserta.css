@@ -1,0 +1,45 @@
+body {
+    background: linear-gradient(to right, #f8f9fa, #fff);
+    padding: 2rem;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.card-history {
+    border: none;
+    border-radius: 20px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+    background-color: #ffffff;
+    overflow: hidden;
+}
+
+.table thead {
+    background-color: #f7f7f7;
+}
+
+.table th {
+    font-weight: bold;
+    color: #333;
+}
+
+.table td {
+    vertical-align: middle;
+}
+
+.score-badge {
+    background-color: #28a745;
+    color: white;
+    padding: 5px 12px;
+    border-radius: 50px;
+    font-weight: bold;
+}
+
+.back-btn {
+    border-radius: 30px;
+    font-weight: 500;
+}
+
+h2 {
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    color: #343a40;
+}
