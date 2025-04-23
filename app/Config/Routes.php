@@ -17,6 +17,7 @@ $routes->post('peserta/submitExam', 'Peserta::submitExam');
 $routes->get('peserta/exam/(:num)', 'Peserta::exam/$1');
 $routes->post('peserta/submitExam', 'Peserta::submitExam');
 $routes->get('peserta/result/(:num)', 'Peserta::result/$1');
+$routes->get('/peserta/history', 'Peserta::history');
 
 
 
