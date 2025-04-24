@@ -103,10 +103,11 @@
                 </table>
             </div>
         <?php endif; ?>
-        <a href="https://docs.google.com/spreadsheets/d/1W6LodJZ8FCgQfrSDJZ8WT3KYyFbRQ3C-EVHKaIX3ZAE/export?format=csv"
-            class="btn btn-outline-primary" target="_blank">
-            📄 Download CSV
+        <a href="https://docs.google.com/spreadsheets/d/1W6LodJZ8FCgQfrSDJZ8WT3KYyFbRQ3C-EVHKaIX3ZAE/export?format=xlsx"
+            class="btn btn-outline-success" target="_blank">
+            📘 Download Excel
         </a>
+
     </div>
 
     <!-- Script JS -->

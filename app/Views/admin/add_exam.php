@@ -29,7 +29,7 @@
             <button type="submit">Simpan</button>
         </form>
 
-        <a href="<?= base_url('admin/dashboard'); ?>">← Kembali ke Manajemen Ujian</a>
+        <a href="<?= base_url('admin/dashboard'); ?>">← Kembali ke Dashboard</a>
     </div>
 </body>
 </html>

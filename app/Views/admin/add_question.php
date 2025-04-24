@@ -38,7 +38,7 @@
             <button type="submit">Simpan</button>
         </form>
 
-        <a href="<?= base_url('admin/manage-exam'); ?>">← Kembali ke Manajemen Ujian</a>
+        <a href="<?= base_url('admin/manage-exam'); ?>">← Kembali ke Dashboard</a>
     </div>
 </body>
 
