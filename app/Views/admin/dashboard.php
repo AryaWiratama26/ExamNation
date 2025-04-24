@@ -77,6 +77,24 @@
 
         <h4 class="mt-5">📄 Rekap Hasil Ujian dari Google Spreadsheet</h4>
 
+        <?php
+        // Jumlah data per halaman
+        $rows_per_page = 5;
+
+        // Hitung total halaman (kurangi 1 karena baris pertama biasanya header)
+        $total_pages = ceil((count($rows) - 1) / $rows_per_page);
+
+        // Ambil halaman saat ini dari URL (default = 1)
+        $page = isset($_GET['page']) ? intval($_GET['page']) : 1;
+
+        // Pastikan halaman tidak di luar batas
+        $page = max(1, min($page, $total_pages));
+
+        // Hitung index awal dan akhir data yang ditampilkan
+        $start_index = ($page - 1) * $rows_per_page + 1;
+        $end_index = min($start_index + $rows_per_page - 1, count($rows) - 1);
+        ?>
+
         <?php if (empty($rows) || count($rows) <= 1): ?>
             <div class="alert alert-info">Belum ada data yang masuk ke spreadsheet.</div>
         <?php else: ?>
@@ -91,7 +109,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <?php for ($i = 1; $i < count($rows); $i++): ?>
+                        <?php for ($i = $start_index; $i <= $end_index; $i++): ?>
                             <tr>
                                 <td><?= esc($rows[$i][0] ?? '-') ?></td>
                                 <td><?= esc($rows[$i][1] ?? '-') ?></td>
@@ -102,11 +120,26 @@
                     </tbody>
                 </table>
             </div>
+
+            <!-- Navigasi halaman -->
+            <?php if ($total_pages > 1): ?>
+                <div class="mt-4 d-flex justify-content-center">
+                    <?php for ($p = 1; $p <= $total_pages; $p++): ?>
+                        <?php $active = ($p == $page) ? 'btn-primary' : 'btn-outline-primary'; ?>
+                        <a href="?page=<?= $p ?>" class="btn <?= $active ?> mx-1"><?= $p ?></a>
+                    <?php endfor; ?>
+                </div>
+            <?php endif; ?>
         <?php endif; ?>
-        <a href="https://docs.google.com/spreadsheets/d/1W6LodJZ8FCgQfrSDJZ8WT3KYyFbRQ3C-EVHKaIX3ZAE/export?format=xlsx"
-            class="btn btn-outline-success" target="_blank">
-            📘 Download Excel
-        </a>
+
+        <!-- Tombol Download Excel -->
+        <div class="mt-4">
+            <a href="https://docs.google.com/spreadsheets/d/1W6LodJZ8FCgQfrSDJZ8WT3KYyFbRQ3C-EVHKaIX3ZAE/export?format=xlsx"
+                class="btn btn-outline-success" target="_blank">
+                📘 Download Excel
+            </a>
+        </div>
+
 
     </div>
 
