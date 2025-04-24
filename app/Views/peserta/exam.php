@@ -4,6 +4,10 @@
 <div class="container">
     <h2>Ujian: <?= esc($exam['title']) ?></h2>
     <p>Durasi: <?= esc($exam['duration']) ?> menit</p>
+
+    <video id="cameraFeed" width="320" height="240" autoplay playsinline
+        style="border: 2px solid #ccc; border-radius: 10px; display: block; margin: 0 auto 10px auto;"></video>
+
     <p id="timer"></p>
 
     <form action="<?= base_url('peserta/submitExam') ?>" method="post" id="examForm">
@@ -29,8 +33,26 @@
 
 <!-- Timer Script -->
 <script>
+    
+    window.onload = function () {
+        const video = document.getElementById('cameraFeed');
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+            alert("Browser kamu tidak mendukung akses kamera.");
+            return;
+        }
+
+        navigator.mediaDevices.getUserMedia({ video: true })
+            .then(function (stream) {
+                video.srcObject = stream;
+            })
+            .catch(function (error) {
+                console.error("Gagal membuka kamera:", error);
+                alert("Tidak bisa membuka kamera: " + error.message);
+            });
+    };
+
     var durationInSeconds = <?= esc($exam['duration']) ?> * 60;
-    var formSubmitted = false; 
+    var formSubmitted = false;
 
     function formatTime(seconds) {
         var minutes = Math.floor(seconds / 60);
@@ -57,7 +79,7 @@
             alert('Anda harus memilih jawaban untuk setiap soal.');
             e.preventDefault();
         } else {
-            formSubmitted = true; 
+            formSubmitted = true;
         }
     });
 
