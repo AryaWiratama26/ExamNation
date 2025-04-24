@@ -9,13 +9,17 @@
     <form action="<?= base_url('peserta/submitExam') ?>" method="post" id="examForm">
         <input type="hidden" name="exam_id" value="<?= esc($exam['id']) ?>">
 
-        <?php foreach ($questions as $index => $q) : ?>
+        <?php foreach ($questions as $index => $q): ?>
             <div class="question">
                 <p><?= ($index + 1) . '. ' . esc($q['question_text']) ?></p>
-                <label><input type="radio" name="answers[<?= esc($q['id']) ?>]" value="A"> <?= esc($q['option_a']) ?></label>
-                <label><input type="radio" name="answers[<?= esc($q['id']) ?>]" value="B"> <?= esc($q['option_b']) ?></label>
-                <label><input type="radio" name="answers[<?= esc($q['id']) ?>]" value="C"> <?= esc($q['option_c']) ?></label>
-                <label><input type="radio" name="answers[<?= esc($q['id']) ?>]" value="D"> <?= esc($q['option_d']) ?></label>
+                <label><input type="radio" name="answers[<?= esc($q['id']) ?>]" value="A">
+                    <?= esc($q['option_a']) ?></label>
+                <label><input type="radio" name="answers[<?= esc($q['id']) ?>]" value="B">
+                    <?= esc($q['option_b']) ?></label>
+                <label><input type="radio" name="answers[<?= esc($q['id']) ?>]" value="C">
+                    <?= esc($q['option_c']) ?></label>
+                <label><input type="radio" name="answers[<?= esc($q['id']) ?>]" value="D">
+                    <?= esc($q['option_d']) ?></label>
             </div>
         <?php endforeach; ?>
 
@@ -26,6 +30,7 @@
 <!-- Timer Script -->
 <script>
     var durationInSeconds = <?= esc($exam['duration']) ?> * 60;
+    var formSubmitted = false; 
 
     function formatTime(seconds) {
         var minutes = Math.floor(seconds / 60);
@@ -34,9 +39,11 @@
     }
 
     function updateTimer() {
-        if (durationInSeconds <= 0) {
+        if (durationInSeconds <= 0 && !formSubmitted) {
+            clearInterval(timerInterval);
             document.getElementById('examForm').submit();
-        } else {
+            formSubmitted = true;
+        } else if (durationInSeconds > 0) {
             document.getElementById('timer').textContent = "Waktu tersisa: " + formatTime(durationInSeconds);
             durationInSeconds--;
         }
@@ -47,8 +54,11 @@
     document.getElementById('examForm').addEventListener('submit', function (e) {
         var answers = document.querySelectorAll('input[type="radio"]:checked');
         if (answers.length === 0) {
-            alert('Anda harus memilih jawaban untuk soal yang telah diberikan.');
+            alert('Anda harus memilih jawaban untuk setiap soal.');
             e.preventDefault();
+        } else {
+            formSubmitted = true; 
         }
     });
+
 </script>
