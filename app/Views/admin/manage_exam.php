@@ -39,6 +39,7 @@
             </tbody>
         </table>
     </div>
+    <a href="<?= base_url('admin/dashboard'); ?>">← Kembali ke Dashboard</a>
 </div>
 
 </body>
