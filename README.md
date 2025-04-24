@@ -69,6 +69,7 @@
 | Fitur                  | Gambar |
 |-----------------------|--------|
 | 🏁 Dashboard Peserta   | ![Dashboard Peserta](/ss/peserta_dashboard.png) |
+| 📜 History Peserta   | ![Dashboard Peserta](/ss/history.png) |
 
 ---
 
