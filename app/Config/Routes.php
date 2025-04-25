@@ -63,5 +63,5 @@ $routes->post('/admin/store-exam', 'Admin::storeExam');
 $routes->get('/admin/add-question/(:num)', 'Admin::addQuestion/$1');
 $routes->post('/admin/store-question', 'Admin::storeQuestion');
 
-
-
+$routes->post('/admin/import-excel', 'Admin::importExcel');
+$routes->post('admin/importExcel', 'Admin::importExcel');
