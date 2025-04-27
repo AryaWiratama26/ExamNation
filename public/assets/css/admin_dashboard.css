@@ -84,7 +84,6 @@ body {
 }
 
 .navbar {
-    background-color: #fff;
     box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
     border-radius: var(--border-radius);
     margin-bottom: 1.5rem;
@@ -99,6 +98,28 @@ body {
 .navbar-toggler {
     border: none;
     font-size: 1.25rem;
+}
+
+.navbar-nav .nav-link,
+.navbar-nav .dropdown-menu a.dropdown-item {
+    color: #4e73df !important;
+}
+
+/* Untuk ikon di dalam nav-link */
+.navbar-nav .nav-link i {
+    color: #4e73df !important;
+}
+
+/* Kalau mau juga efek hover tetap pakai warna biru */
+.navbar-nav .dropdown-menu a.dropdown-item:hover {
+    color: #4e73df !important;
+    background-color: rgba(78, 115, 223, 0.1);
+    /* Background hover soft biru */
+}
+
+/* Biar badge (angka notifikasi) juga konsisten */
+.navbar-nav .badge {
+    background-color: #4e73df;
 }
 
 .card {
@@ -303,10 +324,14 @@ body {
 /* Navbar & Card */
 .dark-mode .navbar,
 .dark-mode .card {
-    background-color: var(--sidebar-bg);
+    background-color: #151521;
     color: var(--primary-text);
 }
 
+/* Progress Stat */
+.dark-mode .progress-bar-stats .progress-stat {
+    background-color: #151521;
+}
 /* Card Header */
 .dark-mode .card-header {
     background-color: #151521;
@@ -324,14 +349,18 @@ body {
 
 /* Pagination */
 .dark-mode .pagination .page-link,
-.dark-mode .pagination .page-item.active .page-link  {
+.dark-mode .pagination .page-item.active .page-link {
     background-color: var(--sidebar-bg);
     border-color: #2c2c40;
     color: var(--primary-text);
 }
 
 /* Smooth Transition (optional) */
-body, .navbar, .card, .sidebar, .pagination .page-link {
+body,
+.navbar,
+.card,
+.sidebar,
+.pagination .page-link {
     transition: all 0.3s ease;
 }
 
