@@ -16,7 +16,7 @@
         <aside class="sidebar" id="sidebar">
             <div class="sidebar-header">
                 <div class="logo">
-                    <img src="<?= base_url('assets/img/logo-3D.png') ?>" alt="Logo">
+                    <img src="<?= base_url('assets/img/logo-3d-test2.png') ?>" alt="Logo">
                     <span>Examination</span>
                 </div>
                 <button class="close-sidebar" id="closeSidebar">
@@ -114,7 +114,7 @@
                             <p>Siap untuk ujian hari ini? Berikut adalah daftar ujian yang tersedia untuk Anda.</p>
                         </div>
                         <div class="welcome-image">
-                            <img src="<?= base_url('assets/img/logo-3d.png') ?>" alt="Welcome">
+                            <img src="<?= base_url('assets/img/logo-3d-test2.png') ?>" alt="Welcome">
                         </div>
                     </div>
                 </section>
