@@ -4,6 +4,7 @@ namespace App\Controllers;
 use App\Models\ExamModel;
 use App\Models\UserModel;
 use App\Models\QuestionModel;
+use App\Models\AdminModel;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use Config\Database;
 use App\Libraries\SpreadsheetWriter;
@@ -18,15 +19,23 @@ class Admin extends BaseController
     }
     public function dashboard()
     {
+        $adminModel = new AdminModel();
         $spreadsheet = new SpreadsheetWriter();
-        $rows = $spreadsheet->getAllRows();
 
-        // Tambahkan ke data yang dilempar ke view
-        return view('admin/dashboard', [
-            // data lain kamu tetap sertakan
-            'rows' => $rows
-        ]);
+        // Ambil semua data
+        $data = [
+            'total_users' => $adminModel->getTotalUsers(),
+            'total_exams' => $adminModel->getTotalExams(),
+            'active_exams' => $adminModel->getActiveExams(),
+            'average_score' => $adminModel->getAverageScore(),
+            'weekly_exam_stats' => $adminModel->getWeeklyExamStats(),
+            'rows' => $spreadsheet->getAllRows(), // Tambahkan data dari Spreadsheet
+        ];
+
+        // Sekali return saja
+        return view('admin/dashboard', $data);
     }
+
 
     public function manageExam()
     {
