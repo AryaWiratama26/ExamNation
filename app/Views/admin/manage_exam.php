@@ -5,19 +5,38 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kelola Ujian</title>
     <link rel="stylesheet" href="<?= base_url('assets/css/manage_exam.css') ?>">
+    <script defer src="<?= base_url('assets/js/manage_exam.js') ?>"></script>
 </head>
 <body>
 
 <div class="container">
-    <h2>Kelola Ujian</h2>
+    <header class="page-header">
+        <h2>Kelola Ujian</h2>
+        <div class="header-actions">
+            <a href="<?= base_url('admin/add_exam'); ?>" class="btn btn-primary">
+                <i class="icon-plus"></i> Tambah Ujian Baru
+            </a>
+        </div>
+    </header>
+
+    <div class="search-container">
+        <input type="text" id="searchInput" class="search-input" placeholder="Cari ujian...">
+        <select id="filterDuration" class="filter-select">
+            <option value="">Semua Durasi</option>
+            <option value="30">30 menit</option>
+            <option value="60">60 menit</option>
+            <option value="90">90 menit</option>
+            <option value="120">120 menit</option>
+        </select>
+    </div>
 
     <div class="table-container">
-        <table class="table">
+        <table class="table" id="examTable">
             <thead>
                 <tr>
-                    <th>Judul</th>
+                    <th data-sort="title">Judul <i class="sort-icon"></i></th>
                     <th>Deskripsi</th>
-                    <th>Durasi</th>
+                    <th data-sort="duration">Durasi <i class="sort-icon"></i></th>
                     <th>Aksi</th>
                 </tr>
             </thead>
@@ -29,9 +48,15 @@
                         <td data-label="Durasi"><?= esc($exam['duration']) ?> menit</td>
                         <td data-label="Aksi">
                             <div class="action-buttons">
-                                <a href="<?= base_url('admin/edit_exam/' . $exam['id']) ?>" class="btn btn-warning">Edit</a>
-                                <a href="<?= base_url('admin/delete_exam/' . $exam['id']) ?>" class="btn btn-danger" onclick="return confirm('Hapus ujian?')">Hapus</a>
-                                <a href="<?= base_url('admin/add-question/' . $exam['id']); ?>" class="btn btn-success">Tambah Soal</a>
+                                <a href="<?= base_url('admin/edit_exam/' . $exam['id']) ?>" class="btn btn-warning" title="Edit ujian">
+                                    <i class="icon-edit"></i>
+                                </a>
+                                <a href="<?= base_url('admin/add-question/' . $exam['id']); ?>" class="btn btn-success" title="Tambah soal">
+                                    <i class="icon-question"></i>
+                                </a>
+                                <a href="<?= base_url('admin/delete_exam/' . $exam['id']) ?>" class="btn btn-danger delete-exam" title="Hapus ujian" data-id="<?= $exam['id'] ?>">
+                                    <i class="icon-trash"></i>
+                                </a>
                             </div>
                         </td>
                     </tr>
@@ -39,7 +64,33 @@
             </tbody>
         </table>
     </div>
-    <a href="<?= base_url('admin/dashboard'); ?>">← Kembali ke Dashboard</a>
+
+    <div class="pagination-container" id="pagination">
+        <!-- Pagination akan diisi oleh JavaScript -->
+    </div>
+
+    <div class="back-link">
+        <a href="<?= base_url('admin/dashboard'); ?>" class="btn btn-outline">
+            <i class="icon-back"></i> Kembali ke Dashboard
+        </a>
+    </div>
+</div>
+
+<!-- Modal konfirmasi hapus -->
+<div id="deleteModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Konfirmasi Hapus</h3>
+            <span class="close-modal">&times;</span>
+        </div>
+        <div class="modal-body">
+            <p>Anda yakin ingin menghapus ujian ini?</p>
+        </div>
+        <div class="modal-footer">
+            <button id="cancelDelete" class="btn btn-outline">Batal</button>
+            <button id="confirmDelete" class="btn btn-danger">Hapus</button>
+        </div>
+    </div>
 </div>
 
 </body>
