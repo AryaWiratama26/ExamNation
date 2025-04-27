@@ -1,16 +1,18 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tambah Soal</title>
     <link rel="stylesheet" href="<?= base_url('assets/css/add_question.css'); ?>">
 </head>
+
 <body>
     <div class="container">
         <h1>Tambah Soal</h1>
 
-        <?php if (session()->getFlashdata('error')) : ?>
+        <?php if (session()->getFlashdata('error')): ?>
             <p class="flash-error"><?= session()->getFlashdata('error'); ?></p>
         <?php endif; ?>
 
@@ -38,7 +40,13 @@
             <button type="submit">Simpan</button>
         </form>
 
-        <a href="<?= base_url('admin/manage-exam'); ?>">← Kembali ke Dashboard</a>
+        <h2>Import Soal dari Excel</h2>
+        <form action="<?= base_url('admin/importExcel') ?>" method="post" enctype="multipart/form-data">
+            <input type="hidden" name="exam_id" value="<?= $exam_id ?>">
+            <input type="file" name="excel_file" accept=".xlsx, .xls" required>
+            <button type="submit">Upload</button>
+        </form>
+
     </div>
 </body>
 
