@@ -4,6 +4,7 @@ namespace App\Controllers;
 use App\Models\ExamModel;
 use App\Models\UserModel;
 use App\Models\QuestionModel;
+use PhpOffice\PhpSpreadsheet\IOFactory;
 use Config\Database;
 use App\Libraries\SpreadsheetWriter;
 
@@ -11,19 +12,20 @@ class Admin extends BaseController
 {
     protected $db;
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->db = Database::connect();
     }
     public function dashboard()
     {
         $spreadsheet = new SpreadsheetWriter();
         $rows = $spreadsheet->getAllRows();
-    
+
         // Tambahkan ke data yang dilempar ke view
         return view('admin/dashboard', [
             // data lain kamu tetap sertakan
             'rows' => $rows
-        ]); 
+        ]);
     }
 
     public function manageExam()
@@ -204,6 +206,40 @@ class Admin extends BaseController
         }
 
         return $this->response->setJSON($jumlahUjianPerHari);
+    }
+
+    public function importExcel()
+    {
+        $file = $this->request->getFile('excel_file');
+        $examId = $this->request->getPost('exam_id');
+
+        if (!$file->isValid()) {
+            return redirect()->back()->with('error', 'File tidak valid.');
+        }
+
+        $filePath = WRITEPATH . 'uploads/' . $file->getRandomName();
+        $file->move(WRITEPATH . 'uploads', basename($filePath));
+
+        $spreadsheet = IOFactory::load($filePath);
+        $sheet = $spreadsheet->getActiveSheet();
+        $rows = $sheet->toArray();
+
+        $questionModel = new \App\Models\QuestionModel();
+
+        for ($i = 1; $i < count($rows); $i++) {
+            $data = [
+                'exam_id' => $examId,
+                'question_text' => $rows[$i][0],
+                'option_a' => $rows[$i][1],
+                'option_b' => $rows[$i][2],
+                'option_c' => $rows[$i][3],
+                'option_d' => $rows[$i][4],
+                'correct_option' => strtoupper($rows[$i][5]),
+            ];
+            $questionModel->insert($data);
+        }
+
+        return redirect()->to('/admin/manage-exam')->with('success', 'Soal berhasil diimpor.');
     }
 
 
