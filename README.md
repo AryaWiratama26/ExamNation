@@ -32,7 +32,9 @@
 |------------|--------------------------|
 | 🎨 Frontend| HTML5, CSS, JavaScript, Bootstrap |
 | 🗃️ Database| MySQL                    |
-| 🌐 Server  | Apache (XAMPP/Laragon/Live Hosting) |
+| 🌐 Server  | Apache (XAMPP) |
+| 🇬 Spreadsheet  | Google API |
+
 
 ---
 
