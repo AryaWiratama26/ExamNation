@@ -2,37 +2,79 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Register</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <!-- Link ke CSS eksternal -->
+    <title>Register</title>
+    
+    <!-- Font Google -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- CSS eksternal -->
     <link rel="stylesheet" href="<?= base_url('assets/css/register_style.css'); ?>">
 </head>
 <body class="light-mode">
-
-    <div class="theme-toggle">
-        <button onclick="toggleMode()">🌙 / ☀️</button>
+    <div class="container">
+        <div class="register-card">
+            <div class="theme-toggle">
+                <button id="theme-button" aria-label="Toggle dark mode">
+                    <span class="moon">🌙</span>
+                    <span class="sun">☀️</span>
+                </button>
+            </div>
+            
+            <div class="register-header">
+                <h1>Create Account</h1>
+                <p>Get started with your new account</p>
+            </div>
+            
+            <div class="register-form">
+                <form action="<?= base_url('/register/store') ?>" method="post">
+                    <div class="form-group">
+                        <label for="name">Nama</label>
+                        <input type="text" id="name" name="name" placeholder="Masukkan nama lengkap" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email" placeholder="Masukkan email anda" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" name="password" placeholder="Buat password" required>
+                        <div class="password-toggle">
+                            <button type="button" id="toggle-password" aria-label="Show password">
+                                <span class="show-password">👁️</span>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="role">Pilih Peran</label>
+                        <div class="select-wrapper">
+                            <select id="role" name="role">
+                                <option value="participant">Peserta</option>
+                                <!-- <option value="admin">Admin</option> -->
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="terms-privacy">
+                        <input type="checkbox" id="terms" name="terms" required>
+                        <label for="terms">Saya setuju dengan <a href="#">Syarat & Ketentuan</a> dan <a href="#">Kebijakan Privasi</a></label>
+                    </div>
+                    
+                    <button type="submit" class="register-button">Daftar Sekarang</button>
+                </form>
+            </div>
+            
+            <div class="register-footer">
+                <p>Sudah punya akun? <a href="<?= base_url('/login') ?>">Login</a></p>
+            </div>
+        </div>
     </div>
-
-    <div class="register-container">
-        <h2>Register</h2>
-        <form action="<?= base_url('/register/store') ?>" method="post">
-            <input type="text" name="name" placeholder="Nama" required>
-            <input type="email" name="email" placeholder="Email" required>
-            <input type="password" name="password" placeholder="Password" required>
-            <select name="role">
-                <option value="participant">Peserta</option>
-                <!-- <option value="admin">Admin</option> -->
-            </select>
-            <button type="submit">Daftar</button>
-        </form>
-    </div>
-
-    <script>
-        function toggleMode() {
-            document.body.classList.toggle('dark-mode');
-            document.body.classList.toggle('light-mode');
-        }
-    </script>
+    
+    <script src="<?= base_url('assets/js/register_script.js'); ?>"></script>
 </body>
 </html>

@@ -1,106 +1,363 @@
-/* Reset dasar */
+/* Base Styles */
+:root {
+    /* Light Theme Colors */
+    --bg-color-light: #f5f7fa;
+    --card-bg-light: #ffffff;
+    --text-color-light: #333333;
+    --input-bg-light: #f8f9fa;
+    --input-border-light: #e1e5eb;
+    --button-bg-light: #4e73df;
+    --button-hover-light: #375ad3;
+    --shadow-light: 0 10px 30px rgba(0, 0, 0, 0.08);
+    --accent-light: #4e73df;
+    
+    /* Dark Theme Colors */
+    --bg-color-dark: #121212;
+    --card-bg-dark: #1e1e1e;
+    --text-color-dark: #e0e0e0;
+    --input-bg-dark: #2d2d2d;
+    --input-border-dark: #3d3d3d;
+    --button-bg-dark: #5e83ef;
+    --button-hover-dark: #4a6fd0;
+    --shadow-dark: 0 10px 30px rgba(0, 0, 0, 0.25);
+    --accent-dark: #5e83ef;
+}
+
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: "Segoe UI", sans-serif;
+    font-family: 'Poppins', sans-serif;
 }
 
 body {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.3s ease;
+    padding: 20px 0;
+}
+
+/* Theme Modes */
+body.light-mode {
+    background-color: var(--bg-color-light);
+    color: var(--text-color-light);
+}
+
+body.dark-mode {
+    background-color: var(--bg-color-dark);
+    color: var(--text-color-dark);
+}
+
+/* Container */
+.container {
+    width: 100%;
+    padding: 20px;
     display: flex;
     justify-content: center;
     align-items: center;
-    min-height: 100vh;
-    padding: 20px;
-    transition: background-color 0.3s, color 0.3s;
 }
 
-/* Mode terang */
-body.light-mode {
-    background-color: #f9f9f9;
-    color: #222;
-}
-
-/* Mode gelap */
-body.dark-mode {
-    background-color: #1e1e1e;
-    color: #f1f1f1;
-}
-
-.register-container {
+/* Register Card */
+.register-card {
+    position: relative;
     width: 100%;
-    max-width: 400px;
-    padding: 30px 25px;
-    background-color: inherit;
-    border: 1px solid rgba(0, 0, 0, 0.1);
-    border-radius: 10px;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+    max-width: 520px;
+    padding: 40px 30px;
+    border-radius: 16px;
+    transition: all 0.3s ease;
 }
 
-h2 {
-    text-align: center;
-    margin-bottom: 20px;
+.light-mode .register-card {
+    background-color: var(--card-bg-light);
+    box-shadow: var(--shadow-light);
 }
 
-form {
-    display: flex;
-    flex-direction: column;
+.dark-mode .register-card {
+    background-color: var(--card-bg-dark);
+    box-shadow: var(--shadow-dark);
 }
 
-input, select {
-    padding: 12px;
-    margin-bottom: 15px;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    background-color: white;
-    color: #222;
-}
-
-body.dark-mode input,
-body.dark-mode select {
-    background-color: #2b2b2b;
-    color: #f1f1f1;
-    border-color: #555;
-}
-
-button {
-    padding: 12px;
-    background: linear-gradient(to right, #007BFF, #00C9A7);
-    color: white;
-    border: none;
-    border-radius: 6px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: opacity 0.2s ease-in-out;
-}
-
-button:hover {
-    opacity: 0.9;
-}
-
-/* Toggle tema */
+/* Theme Toggle */
 .theme-toggle {
-    position: fixed;
-    top: 15px;
-    right: 15px;
+    position: absolute;
+    top: 20px;
+    right: 20px;
 }
 
 .theme-toggle button {
     background: none;
     border: none;
-    font-size: 22px;
     cursor: pointer;
-    color: inherit;
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    transition: all 0.3s ease;
 }
 
-/* Responsif */
-@media (max-width: 480px) {
-    .register-container {
-        padding: 20px 15px;
-    }
+.light-mode .theme-toggle button {
+    background-color: var(--input-bg-light);
+}
 
-    .theme-toggle {
-        top: 10px;
-        right: 10px;
+.dark-mode .theme-toggle button {
+    background-color: var(--input-bg-dark);
+}
+
+.light-mode .moon {
+    display: block;
+}
+
+.light-mode .sun {
+    display: none;
+}
+
+.dark-mode .moon {
+    display: none;
+}
+
+.dark-mode .sun {
+    display: block;
+}
+
+/* Register Header */
+.register-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.register-header h1 {
+    font-size: 28px;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.register-header p {
+    font-size: 16px;
+    opacity: 0.8;
+}
+
+/* Form Styles */
+.form-group {
+    position: relative;
+    margin-bottom: 24px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.form-group input,
+.form-group select {
+    width: 100%;
+    padding: 14px 16px;
+    border-radius: 10px;
+    font-size: 15px;
+    transition: all 0.3s ease;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+}
+
+.light-mode .form-group input,
+.light-mode .form-group select {
+    background-color: var(--input-bg-light);
+    border: 1px solid var(--input-border-light);
+    color: var(--text-color-light);
+}
+
+.dark-mode .form-group input,
+.dark-mode .form-group select {
+    background-color: var(--input-bg-dark);
+    border: 1px solid var(--input-border-dark);
+    color: var(--text-color-dark);
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    outline: none;
+}
+
+.light-mode .form-group input:focus,
+.light-mode .form-group select:focus {
+    border-color: var(--accent-light);
+    box-shadow: 0 0 0 2px rgba(78, 115, 223, 0.1);
+}
+
+.dark-mode .form-group input:focus,
+.dark-mode .form-group select:focus {
+    border-color: var(--accent-dark);
+    box-shadow: 0 0 0 2px rgba(94, 131, 239, 0.1);
+}
+
+/* Select Wrapper */
+.select-wrapper {
+    position: relative;
+}
+
+.select-wrapper::after {
+    content: '▼';
+    font-size: 12px;
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+}
+
+.light-mode .select-wrapper::after {
+    color: var(--text-color-light);
+}
+
+.dark-mode .select-wrapper::after {
+    color: var(--text-color-dark);
+}
+
+/* Password Toggle */
+.password-toggle {
+    position: absolute;
+    right: 16px;
+    top: 40px;
+}
+
+.password-toggle button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    opacity: 0.6;
+    transition: opacity 0.3s ease;
+}
+
+.password-toggle button:hover {
+    opacity: 1;
+}
+
+/* Terms & Privacy */
+.terms-privacy {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 24px;
+    font-size: 14px;
+}
+
+.terms-privacy input {
+    margin-right: 10px;
+    margin-top: 3px;
+}
+
+.terms-privacy a {
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.light-mode .terms-privacy a {
+    color: var(--accent-light);
+}
+
+.dark-mode .terms-privacy a {
+    color: var(--accent-dark);
+}
+
+/* Button */
+.register-button {
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-bottom: 20px;
+    color: white;
+}
+
+.light-mode .register-button {
+    background-color: var(--button-bg-light);
+}
+
+.light-mode .register-button:hover {
+    background-color: var(--button-hover-light);
+}
+
+.dark-mode .register-button {
+    background-color: var(--button-bg-dark);
+}
+
+.dark-mode .register-button:hover {
+    background-color: var(--button-hover-dark);
+}
+
+/* Footer */
+.register-footer {
+    text-align: center;
+    font-size: 14px;
+}
+
+.register-footer a {
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.3s ease;
+}
+
+.light-mode .register-footer a {
+    color: var(--accent-light);
+}
+
+.dark-mode .register-footer a {
+    color: var(--accent-dark);
+}
+
+/* Error Message */
+.error-message {
+    margin-top: -16px;
+    margin-bottom: 16px;
+    font-size: 14px;
+}
+
+.light-mode .error-message {
+    color: #e74c3c;
+}
+
+.dark-mode .error-message {
+    color: #ff6b6b;
+}
+
+/* Responsive */
+@media (max-width: 580px) {
+    .register-card {
+        padding: 30px 20px;
     }
+    
+    .register-header h1 {
+        font-size: 24px;
+    }
+    
+    .terms-privacy {
+        font-size: 12px;
+    }
+}
+
+/* Animation */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.register-card {
+    animation: fadeIn 0.5s ease forwards;
 }
