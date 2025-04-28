@@ -1,111 +1,323 @@
+/* Base Styles */
+:root {
+    /* Light Theme Colors */
+    --bg-color-light: #f5f7fa;
+    --card-bg-light: #ffffff;
+    --text-color-light: #333333;
+    --input-bg-light: #f8f9fa;
+    --input-border-light: #e1e5eb;
+    --button-bg-light: #4e73df;
+    --button-hover-light: #375ad3;
+    --shadow-light: 0 10px 30px rgba(0, 0, 0, 0.08);
+    --accent-light: #4e73df;
+    
+    /* Dark Theme Colors */
+    --bg-color-dark: #121212;
+    --card-bg-dark: #1e1e1e;
+    --text-color-dark: #e0e0e0;
+    --input-bg-dark: #2d2d2d;
+    --input-border-dark: #3d3d3d;
+    --button-bg-dark: #5e83ef;
+    --button-hover-dark: #4a6fd0;
+    --shadow-dark: 0 10px 30px rgba(0, 0, 0, 0.25);
+    --accent-dark: #5e83ef;
+}
+
 * {
-    box-sizing: border-box;
     margin: 0;
     padding: 0;
-    font-family: 'Segoe UI', sans-serif;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
 }
 
 body {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 40px 20px;
     min-height: 100vh;
-    transition: background-color 0.4s, color 0.4s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.3s ease;
 }
 
+/* Theme Modes */
 body.light-mode {
-    background-color: #f2f2f2;
-    color: #333;
+    background-color: var(--bg-color-light);
+    color: var(--text-color-light);
 }
 
 body.dark-mode {
-    background-color: #121212;
-    color: #f0f0f0;
+    background-color: var(--bg-color-dark);
+    color: var(--text-color-dark);
 }
 
-.login-container {
-    background-color: inherit;
-    border: 2px solid rgba(0, 0, 0, 0.1);
-    padding: 35px 30px;
-    border-radius: 10px;
+/* Container */
+.container {
     width: 100%;
-    max-width: 400px;
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
-.login-container h2 {
-    text-align: center;
-    margin-bottom: 20px;
-}
-
-.login-container input {
+/* Login Card */
+.login-card {
+    position: relative;
     width: 100%;
-    padding: 12px;
-    margin: 10px 0;
-    border-radius: 6px;
-    border: 1px solid #ccc;
-    outline: none;
-    transition: 0.3s;
+    max-width: 420px;
+    padding: 40px 30px;
+    border-radius: 16px;
+    transition: all 0.3s ease;
 }
 
-body.dark-mode .login-container input {
-    background-color: #2c2c2c;
-    border: 1px solid #444;
-    color: #f0f0f0;
+.light-mode .login-card {
+    background-color: var(--card-bg-light);
+    box-shadow: var(--shadow-light);
 }
 
-body.light-mode .login-container input {
-    background-color: #fff;
-    color: #333;
+.dark-mode .login-card {
+    background-color: var(--card-bg-dark);
+    box-shadow: var(--shadow-dark);
 }
 
-.login-container button {
-    width: 100%;
-    padding: 12px;
-    margin-top: 15px;
-    background: linear-gradient(135deg, #007BFF, #00C9A7);
-    color: white;
-    border: none;
-    border-radius: 6px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background 0.3s ease;
-}
-
-.login-container button:hover {
-    opacity: 0.9;
-}
-
+/* Theme Toggle */
 .theme-toggle {
     position: absolute;
-    top: 15px;
-    right: 15px;
+    top: 20px;
+    right: 20px;
 }
 
 .theme-toggle button {
     background: none;
     border: none;
-    font-size: 24px;
     cursor: pointer;
-    color: inherit;
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    transition: all 0.3s ease;
 }
 
-@media (max-width: 500px) {
-    .login-container {
-        padding: 25px 20px;
-    }
+.light-mode .theme-toggle button {
+    background-color: var(--input-bg-light);
+}
 
-    .login-container h2 {
-        font-size: 20px;
-    }
+.dark-mode .theme-toggle button {
+    background-color: var(--input-bg-dark);
+}
 
-    .theme-toggle {
-        top: 10px;
-        right: 10px;
-    }
+.light-mode .moon {
+    display: block;
+}
 
-    .theme-toggle button {
-        font-size: 20px;
+.light-mode .sun {
+    display: none;
+}
+
+.dark-mode .moon {
+    display: none;
+}
+
+.dark-mode .sun {
+    display: block;
+}
+
+/* Login Header */
+.login-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.login-header h1 {
+    font-size: 28px;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.login-header p {
+    font-size: 16px;
+    opacity: 0.8;
+}
+
+/* Form Styles */
+.form-group {
+    position: relative;
+    margin-bottom: 24px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 14px 16px;
+    border-radius: 10px;
+    font-size: 15px;
+    transition: all 0.3s ease;
+}
+
+.light-mode .form-group input {
+    background-color: var(--input-bg-light);
+    border: 1px solid var(--input-border-light);
+    color: var(--text-color-light);
+}
+
+.dark-mode .form-group input {
+    background-color: var(--input-bg-dark);
+    border: 1px solid var(--input-border-dark);
+    color: var(--text-color-dark);
+}
+
+.form-group input:focus {
+    outline: none;
+}
+
+.light-mode .form-group input:focus {
+    border-color: var(--accent-light);
+    box-shadow: 0 0 0 2px rgba(78, 115, 223, 0.1);
+}
+
+.dark-mode .form-group input:focus {
+    border-color: var(--accent-dark);
+    box-shadow: 0 0 0 2px rgba(94, 131, 239, 0.1);
+}
+
+/* Password Toggle */
+.password-toggle {
+    position: absolute;
+    right: 16px;
+    top: 40px;
+}
+
+.password-toggle button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    opacity: 0.6;
+    transition: opacity 0.3s ease;
+}
+
+.password-toggle button:hover {
+    opacity: 1;
+}
+
+/* Form Options */
+.form-options {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    font-size: 14px;
+}
+
+.remember-me {
+    display: flex;
+    align-items: center;
+}
+
+.remember-me input {
+    margin-right: 8px;
+    cursor: pointer;
+}
+
+.forgot-password {
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.light-mode .forgot-password {
+    color: var(--accent-light);
+}
+
+.dark-mode .forgot-password {
+    color: var(--accent-dark);
+}
+
+/* Button */
+.login-button {
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-bottom: 20px;
+    color: white;
+}
+
+.light-mode .login-button {
+    background-color: var(--button-bg-light);
+}
+
+.light-mode .login-button:hover {
+    background-color: var(--button-hover-light);
+}
+
+.dark-mode .login-button {
+    background-color: var(--button-bg-dark);
+}
+
+.dark-mode .login-button:hover {
+    background-color: var(--button-hover-dark);
+}
+
+/* Footer */
+.login-footer {
+    text-align: center;
+    font-size: 14px;
+}
+
+.login-footer a {
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.3s ease;
+}
+
+.light-mode .login-footer a {
+    color: var(--accent-light);
+}
+
+.dark-mode .login-footer a {
+    color: var(--accent-dark);
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+    .login-card {
+        padding: 30px 20px;
     }
+    
+    .login-header h1 {
+        font-size: 24px;
+    }
+    
+    .form-options {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+}
+
+/* Animation */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.login-card {
+    animation: fadeIn 0.5s ease forwards;
 }
