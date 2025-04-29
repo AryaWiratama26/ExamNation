@@ -1,94 +1,372 @@
+/* ujian_peserta.css */
+:root {
+    --primary-color: #4361ee;
+    --secondary-color: #3a0ca3;
+    --accent-color: #4cc9f0;
+    --text-color: #333;
+    --background-color: #f8f9fa;
+    --card-background: #ffffff;
+    --border-color: #e0e0e0;
+    --option-hover: #f0f7ff;
+    --timer-background: #f8d7da;
+    --timer-color: #721c24;
+    --success-color: #198754;
+    --warning-color: #ffc107;
+    --transition-speed: 0.3s;
+    --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    --radius: 8px;
+}
+
+[data-theme="dark"] {
+    --primary-color: #4cc9f0;
+    --secondary-color: #4361ee;
+    --accent-color: #3a0ca3;
+    --text-color: #f0f0f0;
+    --background-color: #121212;
+    --card-background: #1e1e1e;
+    --border-color: #333;
+    --option-hover: #2d3748;
+    --timer-background: #3a0703;
+    --timer-color: #ffb3b3;
+    --shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 body {
-    font-family: 'Segoe UI', sans-serif;
-    background-color: #f7f9fb;
-    color: #333;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    transition: background-color var(--transition-speed), color var(--transition-speed);
+    line-height: 1.6;
+}
+
+.page-container {
+    max-width: 1200px;
+    margin: 0 auto;
     padding: 20px;
 }
 
-.container {
-    max-width: 800px;
-    margin: 0 auto;
-    background-color: #ffffff;
-    padding: 30px;
-    border-radius: 12px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-}
-
-h2 {
-    margin-bottom: 10px;
-    color: #222;
-}
-
-p {
+.exam-header {
+    background-color: var(--card-background);
+    border-radius: var(--radius);
+    padding: 20px;
     margin-bottom: 20px;
+    box-shadow: var(--shadow);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    transition: background-color var(--transition-speed), box-shadow var(--transition-speed);
 }
 
-#timer {
-    font-weight: bold;
-    color: #ff6f61;
-    margin-bottom: 30px;
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
 }
 
-.question {
-    margin-bottom: 25px;
-}
-
-.question p {
+.exam-header h1 {
+    color: var(--primary-color);
+    font-size: 1.8rem;
     margin-bottom: 10px;
-    font-weight: 600;
-    color: #444;
+    transition: color var(--transition-speed);
 }
 
-label {
-    display: block;
-    margin-bottom: 6px;
-    font-size: 0.95rem;
-    cursor: pointer;
-    padding-left: 4px;
+.exam-info {
+    display: flex;
+    align-items: center;
+    gap: 20px;
 }
 
-input[type="radio"] {
-    margin-right: 8px;
+.duration {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 500;
 }
 
-.btn {
-    background-color: #8ecae6;
-    color: white;
-    padding: 10px 18px;
-    border: none;
-    border-radius: 6px;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
+.timer-container {
     margin-top: 10px;
+    text-align: center;
 }
 
-.btn:hover {
-    background-color: #78bdd4;
+.timer {
+    display: inline-block;
+    background-color: var(--timer-background);
+    color: var(--timer-color);
+    padding: 6px 12px;
+    border-radius: var(--radius);
+    font-weight: bold;
+    transition: background-color var(--transition-speed), color var(--transition-speed);
+}
+
+.main-content {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    gap: 20px;
+}
+
+.camera-container {
+    background-color: var(--card-background);
+    border-radius: var(--radius);
+    padding: 20px;
+    height: fit-content;
+    position: sticky;
+    top: 110px;
+    box-shadow: var(--shadow);
+    transition: background-color var(--transition-speed), box-shadow var(--transition-speed);
+}
+
+.camera-container h2 {
+    font-size: 1.2rem;
+    margin-bottom: 15px;
+    color: var(--secondary-color);
+    text-align: center;
+    transition: color var(--transition-speed);
+}
+
+#cameraFeed {
+    width: 100%;
+    height: auto;
+    border-radius: var(--radius);
+    border: 2px solid var(--border-color);
+    margin-bottom: 10px;
+    transition: border-color var(--transition-speed);
+}
+
+.camera-note {
+    font-size: 0.85rem;
+    text-align: center;
+    color: var(--accent-color);
+    transition: color var(--transition-speed);
+}
+
+.exam-container {
+    background-color: var(--card-background);
+    border-radius: var(--radius);
+    padding: 20px;
+    box-shadow: var(--shadow);
+    transition: background-color var(--transition-speed), box-shadow var(--transition-speed);
+}
+
+.questions-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.question-card {
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    padding: 15px;
+    display: flex;
+    gap: 15px;
+    transition: border-color var(--transition-speed);
+}
+
+.question-number {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    min-width: 30px;
+    height: 30px;
+    background-color: var(--primary-color);
+    color: white;
+    border-radius: 50%;
+    font-weight: bold;
+    transition: background-color var(--transition-speed);
+}
+
+.question-content {
+    flex: 1;
+}
+
+.question-text {
+    font-weight: 500;
+    margin-bottom: 15px;
+}
+
+.options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.option {
+    display: flex;
+    align-items: center;
+    padding: 8px 12px;
+    border-radius: var(--radius);
+    transition: background-color var(--transition-speed);
+}
+
+.option:hover {
+    background-color: var(--option-hover);
+}
+
+.option input[type="radio"] {
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--primary-color);
+    border-radius: 50%;
+    margin-right: 10px;
+    position: relative;
+    cursor: pointer;
+    transition: border-color var(--transition-speed);
+}
+
+.option input[type="radio"]:checked::after {
+    content: "";
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 10px;
+    height: 10px;
+    background-color: var(--primary-color);
+    border-radius: 50%;
+    transition: background-color var(--transition-speed);
+}
+
+.option label {
+    flex: 1;
+    cursor: pointer;
+}
+
+.submit-container {
+    margin-top: 30px;
+    text-align: center;
+}
+
+.submit-btn {
+    background-color: var(--success-color);
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: var(--radius);
+    font-weight: bold;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: background-color 0.2s, transform 0.2s;
+}
+
+.submit-btn:hover {
+    background-color: #146c43;
+    transform: translateY(-2px);
+}
+
+.submit-btn:active {
+    transform: translateY(0);
+}
+
+/* Dark Mode Toggle */
+.theme-switch-wrapper {
+    display: flex;
+    align-items: center;
+}
+
+.theme-switch {
+    display: inline-block;
+    height: 30px;
+    position: relative;
+    width: 60px;
+}
+
+.theme-switch input {
+    display: none;
+}
+
+.slider {
+    background-color: #ccc;
+    bottom: 0;
+    cursor: pointer;
+    left: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
+    transition: .4s;
+    border-radius: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 5px;
+}
+
+.slider .fa-sun {
+    color: #f39c12;
+    font-size: 14px;
+    margin-left: 5px;
+}
+
+.slider .fa-moon {
+    color: #2c3e50;
+    font-size: 14px;
+    margin-right: 5px;
+}
+
+.slider:before {
+    background-color: white;
+    bottom: 4px;
+    content: "";
+    height: 22px;
+    left: 4px;
+    position: absolute;
+    transition: .4s;
+    width: 22px;
+    border-radius: 50%;
+    z-index: 1;
+}
+
+input:checked + .slider {
+    background-color: #2c3e50;
+}
+
+input:checked + .slider:before {
+    transform: translateX(30px);
+}
+
+.slider.round {
+    border-radius: 34px;
+}
+
+.slider.round:before {
+    border-radius: 50%;
 }
 
 /* Responsive */
-@media (max-width: 600px) {
-    .container {
-        padding: 20px;
+@media (max-width: 768px) {
+    .main-content {
+        grid-template-columns: 1fr;
     }
-
-    h2 {
-        font-size: 1.3rem;
+    
+    .camera-container {
+        position: static;
+        margin-bottom: 20px;
     }
-
-    label {
-        font-size: 0.9rem;
+    
+    .header-content {
+        flex-direction: column;
+        align-items: flex-start;
     }
-
-    .btn {
-        font-size: 0.9rem;
-        padding: 8px 14px;
+    
+    .exam-info {
+        width: 100%;
+        justify-content: space-between;
+        margin-top: 10px;
+    }
+    
+    .question-card {
+        flex-direction: column;
+    }
+    
+    .question-number {
+        align-self: flex-start;
     }
 }

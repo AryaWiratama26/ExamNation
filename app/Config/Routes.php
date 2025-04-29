@@ -66,3 +66,5 @@ $routes->post('/admin/store-question', 'Admin::storeQuestion');
 $routes->post('/admin/import-excel', 'Admin::importExcel');
 $routes->post('admin/importExcel', 'Admin::importExcel');
 
+$routes->get('/peserta/history/pdf', 'Peserta::downloadHistoryPdf');
+$routes->get('peserta/downloadHistoryPdf', 'Peserta::downloadHistoryPdf');
