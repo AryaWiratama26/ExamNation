@@ -54,7 +54,12 @@ document.addEventListener('DOMContentLoaded', function() {
         
         if (answeredQuestions === 0) {
             e.preventDefault();
-            alert('Anda harus memilih jawaban untuk minimal satu soal.');
+            // alert('Anda harus memilih jawaban untuk minimal satu soal.');
+            Swal.fire({
+                title: "Examination",
+                text: "Anda harus memilih jawaban untuk minimal satu soal.",
+                icon: "warning"
+              });
         } else if (answeredQuestions < totalQuestions) {
             const confirmSubmit = confirm(`Anda baru menjawab ${answeredQuestions} dari ${totalQuestions} soal. Yakin ingin menyelesaikan ujian?`);
             if (!confirmSubmit) {

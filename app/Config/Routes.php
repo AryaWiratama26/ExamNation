@@ -68,3 +68,5 @@ $routes->post('admin/importExcel', 'Admin::importExcel');
 
 $routes->get('/peserta/history/pdf', 'Peserta::downloadHistoryPdf');
 $routes->get('peserta/downloadHistoryPdf', 'Peserta::downloadHistoryPdf');
+
+$routes->get('admin/add_exam', 'Admin::addExam');
