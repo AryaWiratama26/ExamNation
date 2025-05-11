@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,6 +11,7 @@
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
+
 <body>
     <div class="app-container">
         <!-- Sidebar -->
@@ -23,7 +25,7 @@
                     <i class="fas fa-times"></i>
                 </button>
             </div>
-            
+
             <div class="sidebar-content">
                 <div class="user-profile-sidebar">
                     <div class="user-avatar">
@@ -34,7 +36,7 @@
                         <span class="user-role">Peserta</span>
                     </div>
                 </div>
-                
+
                 <nav class="sidebar-nav">
                     <ul>
                         <li class="active">
@@ -135,7 +137,7 @@
                                 <i class="fas fa-check-circle"></i>
                             </div>
                             <div class="stat-details">
-                                <h3>0</h3>
+                                <h3><?= $completedExams ?></h3>
                                 <p>Ujian Selesai</p>
                             </div>
                         </div>
@@ -144,7 +146,7 @@
                                 <i class="fas fa-medal"></i>
                             </div>
                             <div class="stat-details">
-                                <h3>0</h3>
+                                <h3><?= $highestScore ?></h3>
                                 <p>Nilai Tertinggi</p>
                             </div>
                         </div>
@@ -226,4 +228,5 @@
 
     <script src="<?= base_url('assets/js/dashboard_peserta.js') ?>"></script>
 </body>
+
 </html>
