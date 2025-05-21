@@ -125,3 +125,16 @@ CREATE TABLE results (
 );
 
 ALTER TABLE exams ADD COLUMN status ENUM('active', 'inactive') NOT NULL DEFAULT 'active';
+
+CREATE TABLE exam_activity_logs (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    exam_id INT NOT NULL,
+    activity VARCHAR(255) NOT NULL,
+    logged_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (exam_id) REFERENCES exams(id) ON DELETE CASCADE
+);
+
+ALTER TABLE exams ADD COLUMN exam_stat ENUM('draft', 'published') NOT NULL DEFAULT 'draft';
+```

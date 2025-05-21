@@ -30,7 +30,7 @@
                     </div>
                 <?php endif; ?>
 
-                <form action="<?= base_url('admin/update_exam/' . $exams['id']) ?>" method="post">
+                <form action="<?= base_url('admin/update-exam/' . $exams['id']) ?>" method="post">
                     <div class="form-group">
                         <label for="title"><i class="fas fa-heading"></i> Judul:</label>
                         <input type="text" id="title" name="title" value="<?= esc($exams['title']) ?>" required>
@@ -50,7 +50,7 @@
                         <button type="submit" class="btn btn-primary">
                             <i class="fas fa-save"></i> Simpan
                         </button>
-                        <a href="<?= base_url('admin/exams') ?>" class="btn btn-secondary">
+                        <a href="<?= base_url('admin/manage-exam') ?>" class="btn btn-secondary">
                             <i class="fas fa-arrow-left"></i> Kembali
                         </a>
                     </div>

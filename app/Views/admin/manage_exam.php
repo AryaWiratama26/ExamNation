@@ -13,7 +13,7 @@
     <header class="page-header">
         <h2>Kelola Ujian</h2>
         <div class="header-actions">
-            <a href="<?= base_url('admin/add_exam'); ?>" class="btn btn-primary">
+            <a href="<?= base_url('admin/add-exam'); ?>" class="btn btn-primary">
                 <i class="icon-plus"></i> Tambah Ujian Baru
             </a>
         </div>
@@ -37,6 +37,7 @@
                     <th data-sort="title">Judul <i class="sort-icon"></i></th>
                     <th>Deskripsi</th>
                     <th data-sort="duration">Durasi <i class="sort-icon"></i></th>
+                    <th>Status Ujian</th>
                     <th>Aksi</th>
                 </tr>
             </thead>
@@ -46,15 +47,27 @@
                         <td data-label="Judul"><?= esc($exam['title']) ?></td>
                         <td data-label="Deskripsi"><?= esc($exam['description']) ?></td>
                         <td data-label="Durasi"><?= esc($exam['duration']) ?> menit</td>
+                        <td data-label="Status">
+                            <div class="form-check form-switch">
+                                <input type="checkbox" 
+                                       class="form-check-input status-toggle" 
+                                       id="status_<?= $exam['id'] ?>" 
+                                       data-exam-id="<?= $exam['id'] ?>"
+                                       <?= ($exam['exam_stat'] ?? 'draft') === 'published' ? 'checked' : '' ?>>
+                                <span class="status-badge <?= ($exam['exam_stat'] ?? 'draft') === 'published' ? 'published' : 'draft' ?>">
+                                    <?= ($exam['exam_stat'] ?? 'draft') === 'published' ? 'Published' : 'Draft' ?>
+                                </span>
+                            </div>
+                        </td>
                         <td data-label="Aksi">
                             <div class="action-buttons">
-                                <a href="<?= base_url('admin/edit_exam/' . $exam['id']) ?>" class="btn btn-warning" title="Edit ujian">
+                                <a href="<?= base_url('admin/edit-exam/' . $exam['id']) ?>" class="btn btn-warning" title="Edit ujian">
                                     <i class="icon-edit"></i>
                                 </a>
                                 <a href="<?= base_url('admin/add-question/' . $exam['id']); ?>" class="btn btn-success" title="Tambah soal">
                                     <i class="icon-question"></i>
                                 </a>
-                                <a href="<?= base_url('admin/delete_exam/' . $exam['id']) ?>" class="btn btn-danger delete-exam" title="Hapus ujian" data-id="<?= $exam['id'] ?>">
+                                <a href="javascript:void(0)" class="btn btn-danger delete-exam" title="Hapus ujian" data-id="<?= $exam['id'] ?>">
                                     <i class="icon-trash"></i>
                                 </a>
                             </div>

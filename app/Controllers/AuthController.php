@@ -39,15 +39,38 @@ class AuthController extends Controller
         $user = $userModel->where('email', $email)->first();
 
         if ($user && password_verify($password, $user['password'])) {
-            session()->set([
+            // Destroy any existing session
+            if (session()->isStarted) {
+                session()->destroy();
+            }
+
+            // Start a new session
+            session()->start();
+
+            // Set session data
+            $isAdmin = ($user['role'] == 'admin');
+            $sessionData = [
                 'user_id' => $user['id'],
                 'user_name' => $user['name'],
+                'user_email' => $user['email'],
                 'user_role' => $user['role'],
-                'logged_in' => true
-            ]);
+                'is_admin' => $isAdmin,
+                'logged_in' => true,
+                'last_activity' => time()
+            ];
+            
+            session()->set($sessionData);
+
+            // Regenerate session ID for security
+            session()->regenerate(true);
+
+            // Set remember-me cookie if requested
+            if ($this->request->getPost('remember') == '1') {
+                set_cookie('remember_token', $user['id'], 30 * 24 * 60 * 60); // 30 days
+            }
 
             // Cek role dan arahkan ke halaman yang sesuai
-            if ($user['role'] == 'admin') {
+            if ($isAdmin) {
                 return redirect()->to('/admin/dashboard');
             } else {
                 return redirect()->to('/peserta/dashboard');
@@ -57,10 +80,16 @@ class AuthController extends Controller
         }
     }
 
-
     public function logout()
     {
+        // Clear the remember-me cookie if it exists
+        if (get_cookie('remember_token')) {
+            delete_cookie('remember_token');
+        }
+
+        // Destroy the session
         session()->destroy();
-        return redirect()->to('/login');
+        
+        return redirect()->to('/login')->with('message', 'Anda telah berhasil logout');
     }
 }

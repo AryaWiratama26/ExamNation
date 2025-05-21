@@ -163,8 +163,21 @@ body {
 /* ========== ACTION BUTTONS ========== */
 .action-buttons {
     display: flex;
-    gap: var(--spacing-sm);
+    gap: 8px;
     justify-content: flex-start;
+}
+
+.action-buttons .btn {
+    padding: 0.5rem;
+    width: 2.5rem;
+    height: 2.5rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.action-buttons .btn i {
+    margin: 0;
 }
 
 .btn {
@@ -179,10 +192,6 @@ body {
     text-decoration: none;
     transition: var(--transition);
     color: white;
-}
-
-.btn i {
-    margin-right: var(--spacing-xs);
 }
 
 .btn-primary {
@@ -422,5 +431,133 @@ body {
     .action-buttons {
         justify-content: flex-end;
         flex-wrap: wrap;
+    }
+}
+
+/* Toggle Switch and Status Styles */
+.form-check.form-switch {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    padding: 0;
+    min-height: 24px;
+}
+
+.form-check-input {
+    appearance: none;
+    position: relative;
+    width: 48px;
+    height: 24px;
+    background-color: #e9ecef;
+    border-radius: 12px;
+    border: 2px solid #ced4da;
+    cursor: pointer;
+    transition: var(--transition);
+    margin: 0;
+}
+
+.form-check-input:checked {
+    background-color: var(--success-color);
+    border-color: var(--success-color);
+}
+
+.form-check-input::before {
+    content: '';
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    background-color: white;
+    border-radius: 50%;
+    top: 2px;
+    left: 2px;
+    transition: var(--transition);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.form-check-input:checked::before {
+    left: 26px;
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    text-transform: capitalize;
+    min-width: 80px;
+    text-align: center;
+}
+
+.status-badge.draft {
+    background-color: #f8f9fa;
+    color: var(--secondary-color);
+    border: 1px solid var(--border-color);
+}
+
+.status-badge.published {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+/* Ensure status column has proper width and alignment */
+.table td[data-label="Status"] {
+    min-width: 160px;
+    white-space: nowrap;
+}
+
+.table th[data-label="Status"] {
+    min-width: 160px;
+    white-space: nowrap;
+}
+
+/* Mobile responsiveness for status column */
+@media (max-width: 768px) {
+    .table td[data-label="Status"]::before {
+        content: attr(data-label);
+        font-weight: bold;
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        color: var(--secondary-color);
+        display: block;
+        margin-bottom: var(--spacing-xs);
+    }
+
+    .form-check.form-switch {
+        justify-content: flex-start;
+    }
+}
+
+/* Notification Styles */
+.notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 15px 25px;
+    border-radius: 4px;
+    color: white;
+    font-weight: 500;
+    z-index: 1000;
+    animation: slideIn 0.3s ease-out;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+.notification.success {
+    background-color: #28a745;
+}
+
+.notification.error {
+    background-color: #dc3545;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
     }
 }
