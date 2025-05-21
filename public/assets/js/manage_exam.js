@@ -20,6 +20,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const titleCell = row.querySelector('td[data-label="Judul"]');
         const descriptionCell = row.querySelector('td[data-label="Deskripsi"]');
         const durationCell = row.querySelector('td[data-label="Durasi"]');
+        const statusCell = row.querySelector('td[data-label="Status"]');
         const actionCell = row.querySelector('td[data-label="Aksi"]');
         
         return {
@@ -27,6 +28,7 @@ document.addEventListener('DOMContentLoaded', function() {
             title: titleCell.textContent.trim(),
             description: descriptionCell.textContent.trim(),
             duration: parseInt(durationCell.textContent.trim().replace(' menit', '')),
+            status: statusCell ? statusCell.innerHTML : '',
             actions: actionCell.innerHTML
         };
     });
@@ -88,6 +90,11 @@ document.addEventListener('DOMContentLoaded', function() {
             if (e.target === deleteModal) {
                 hideModal();
             }
+        });
+        
+        // Handle status toggle
+        document.querySelectorAll('.status-toggle').forEach(toggle => {
+            toggle.addEventListener('change', handleStatusToggle);
         });
     }
     
@@ -195,7 +202,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (filteredExams.length === 0) {
             const noDataRow = document.createElement('tr');
             noDataRow.innerHTML = `
-                <td colspan="4" style="text-align: center; padding: 20px;">
+                <td colspan="5" style="text-align: center; padding: 20px;">
                     <p>Tidak ada ujian yang sesuai dengan pencarian Anda.</p>
                 </td>
             `;
@@ -212,11 +219,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 <td data-label="Judul">${exam.title}</td>
                 <td data-label="Deskripsi">${exam.description}</td>
                 <td data-label="Durasi">${exam.duration} menit</td>
+                <td data-label="Status">${exam.status}</td>
                 <td data-label="Aksi">${exam.actions}</td>
             `;
-            
             tableBody.appendChild(row);
         }
+        
+        // Rebind status toggle event listeners
+        document.querySelectorAll('.status-toggle').forEach(toggle => {
+            toggle.addEventListener('change', handleStatusToggle);
+        });
     }
     
     // Update pagination controls
@@ -320,13 +332,26 @@ document.addEventListener('DOMContentLoaded', function() {
         if (examToDelete) {
             console.log('Confirming delete for exam ID:', examToDelete);
             // Pastikan URL terbentuk dengan benar
-            const deleteUrl = `${baseUrl}admin/delete_exam/${examToDelete}`;
+            const deleteUrl = `${baseUrl}admin/delete-exam/${examToDelete}`;
             console.log('Redirecting to:', deleteUrl);
             window.location.href = deleteUrl;
         } else {
             console.error('No exam ID to delete');
         }
         hideModal();
+    }
+    
+    // Show notification function
+    function showNotification(message, type) {
+        const notification = document.createElement('div');
+        notification.className = `notification ${type}`;
+        notification.textContent = message;
+        document.body.appendChild(notification);
+        
+        // Remove notification after 3 seconds
+        setTimeout(() => {
+            notification.remove();
+        }, 3000);
     }
     
     // Export some functions and variables for potential external use
@@ -348,6 +373,40 @@ document.addEventListener('DOMContentLoaded', function() {
             updatePagination();
         }
     };
+    
+    // Separate function for status toggle handler
+    function handleStatusToggle() {
+        const examId = this.getAttribute('data-exam-id');
+        const newStatus = this.checked ? 'published' : 'draft';
+        const statusBadge = this.nextElementSibling;
+        
+        fetch(`${baseUrl}admin/toggle-exam-status/${examId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: JSON.stringify({ status: newStatus })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                statusBadge.textContent = newStatus === 'published' ? 'Published' : 'Draft';
+                statusBadge.className = `status-badge ${newStatus}`;
+                showNotification(data.message, 'success');
+            } else {
+                // Revert toggle if failed
+                this.checked = !this.checked;
+                showNotification(data.message, 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            // Revert toggle if failed
+            this.checked = !this.checked;
+            showNotification('Failed to update exam status', 'error');
+        });
+    }
     
     // Initialize the page
     init();

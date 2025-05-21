@@ -115,7 +115,7 @@ class Admin extends BaseController
             'duration' => $this->request->getPost('duration'),
         ]);
 
-        return redirect()->to('/admin/manage_exam')->with('success', 'Ujian berhasil diperbarui.');
+        return redirect()->to('/admin/manage-exam')->with('success', 'Ujian berhasil diperbarui.');
     }
 
 
@@ -135,13 +135,13 @@ class Admin extends BaseController
         return redirect()->to('/admin/manage_users');
     }
 
-    public function delete_exam($id)
+    public function deleteExam($id)
     {
         $examModel = new ExamModel();
         if ($examModel->delete($id)) {
-            return redirect()->to('admin/manage_exam')->with('success', 'Ujian berhasil dihapus');
+            return redirect()->to('/admin/manage-exam')->with('success', 'Ujian berhasil dihapus');
         } else {
-            return redirect()->to('admin/manage_exam')->with('error', 'Gagal menghapus ujian');
+            return redirect()->to('/admin/manage-exam')->with('error', 'Gagal menghapus ujian');
         }
     }
 
@@ -178,6 +178,7 @@ class Admin extends BaseController
             'description' => $this->request->getPost('description'),
             'duration' => $this->request->getPost('duration'),
             'created_by' => $createdBy,
+            'exam_stat' => 'draft' // Set default status as draft
         ]);
 
         return redirect()->to('/admin/manage-exam')->with('success', 'Ujian berhasil ditambahkan.');
@@ -287,7 +288,34 @@ class Admin extends BaseController
         return redirect()->to('/admin/manage-exam')->with('success', 'Soal berhasil diimpor.');
     }
 
+    public function toggleExamStatus($id)
+    {
+        if (!$this->request->isAJAX()) {
+            return $this->response->setJSON(['success' => false, 'message' => 'Invalid request']);
+        }
 
+        $examModel = new ExamModel();
+        $exam = $examModel->find($id);
+
+        if (!$exam) {
+            return $this->response->setJSON(['success' => false, 'message' => 'Ujian tidak ditemukan']);
+        }
+
+        $status = $this->request->getJSON()->status;
+        
+        try {
+            $examModel->toggleStatus($id, $status);
+            return $this->response->setJSON([
+                'success' => true,
+                'message' => 'Status ujian berhasil diperbarui'
+            ]);
+        } catch (\Exception $e) {
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'Gagal memperbarui status ujian'
+            ]);
+        }
+    }
 
 }
 

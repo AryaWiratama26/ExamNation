@@ -207,6 +207,71 @@
             </div>
         </div>
 
+        <!-- Violations Monitoring Section -->
+        <div class="row g-4 mb-4">
+            <div class="col-12">
+                <div class="card shadow-sm">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">
+                            <i class="bi bi-exclamation-triangle"></i> Monitoring Pelanggaran Ujian
+                        </h5>
+                        <a href="<?= base_url('admin/violations') ?>" class="btn btn-sm btn-outline-primary">
+                            <i class="bi bi-eye"></i> Lihat Semua
+                        </a>
+                    </div>
+                    <div class="card-body">
+                        <?php
+                        $activityLogModel = new \App\Models\ExamActivityLogModel();
+                        $recentViolations = $activityLogModel->getRecentViolations(10); // Limit to 10
+                        
+                        if (empty($recentViolations)): ?>
+                            <div class="text-center text-muted py-3">
+                                <i class="bi bi-info-circle"></i> Belum ada pelanggaran tercatat
+                            </div>
+                        <?php else: ?>
+                            <div class="table-responsive">
+                                <table class="table table-hover" id="violationsTable">
+                                    <thead>
+                                        <tr>
+                                            <th>Peserta</th>
+                                            <th>Ujian</th>
+                                            <th>Jenis Pelanggaran</th>
+                                            <th>Waktu</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php foreach ($recentViolations as $violation): 
+                                            $warningLevel = strpos($violation['activity'], 'Maximum') !== false ? 'danger' : 'warning';
+                                        ?>
+                                            <tr>
+                                                <td><?= esc($violation['user_name']) ?></td>
+                                                <td><?= esc($violation['exam_title']) ?></td>
+                                                <td><?= esc($violation['activity']) ?></td>
+                                                <td><?= time_elapsed_string($violation['logged_at']) ?></td>
+                                                <td>
+                                                    <span class="badge bg-<?= $warningLevel ?>">
+                                                        <?= $warningLevel === 'danger' ? 'Serius' : 'Peringatan' ?>
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                        <?php endforeach; ?>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <?php if (count($recentViolations) >= 10): ?>
+                                <div class="text-end mt-3">
+                                    <a href="<?= base_url('admin/violations') ?>" class="btn btn-link">
+                                        Lihat lebih banyak <i class="bi bi-arrow-right"></i>
+                                    </a>
+                                </div>
+                            <?php endif; ?>
+                        <?php endif; ?>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Cards -->
         <div class="row g-4 mb-4">
             <div class="col-md-4">

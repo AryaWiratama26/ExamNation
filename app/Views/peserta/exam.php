@@ -7,6 +7,23 @@
     <title>Ujian Online</title>
     <link rel="stylesheet" href="<?= base_url('assets/css/ujian_peserta.css') ?>">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- Add warning styles -->
+    <style>
+        .warning-banner {
+            background-color: #fff3cd;
+            color: #856404;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ffeeba;
+            border-radius: 4px;
+            text-align: center;
+        }
+        
+        .warning-banner i {
+            margin-right: 8px;
+        }
+    </style>
 </head>
 <body>
     <div class="page-container">
@@ -30,6 +47,12 @@
                 <span id="timer" class="timer"></span>
             </div>
         </header>
+
+        <!-- Add warning banner -->
+        <div class="warning-banner">
+            <i class="fas fa-exclamation-triangle"></i>
+            <strong>Peringatan:</strong> Berpindah tab atau keluar dari halaman ujian akan dicatat dan dilaporkan ke admin. Mohon tetap fokus pada halaman ujian.
+        </div>
 
         <div class="main-content">
             <div class="camera-container">
@@ -83,5 +106,6 @@
 
     <script src="<?= base_url('assets/js/ujian_peserta.js') ?>"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="<?= base_url('assets/js/exam_monitor.js') ?>"></script>
 </body>
 </html>
