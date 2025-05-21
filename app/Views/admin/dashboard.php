@@ -112,6 +112,101 @@
                 <div class="value text-warning"><?= esc($average_score) ?></div>
             </div>
         </div>
+
+        <!-- Real-time Activity Feed -->
+        <div class="row g-4 mb-4">
+            <div class="col-md-8">
+                <div class="card shadow-sm">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0"><i class="bi bi-activity"></i> Aktivitas Terbaru</h5>
+                        <span class="badge bg-primary">Real-time</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="activity-feed">
+                            <?php
+                            $resultModel = new \App\Models\ResultModel();
+                            $userModel = new \App\Models\UserModel();
+                            $examModel = new \App\Models\ExamModel();
+                            
+                            // Get latest 5 exam results
+                            $latestResults = $resultModel->orderBy('taken_at', 'DESC')
+                                                       ->limit(5)
+                                                       ->findAll();
+                            
+                            if (empty($latestResults)): ?>
+                                <div class="text-center text-muted py-3">
+                                    <i class="bi bi-info-circle"></i> Belum ada aktivitas ujian
+                                </div>
+                            <?php else:
+                                foreach ($latestResults as $result):
+                                    $user = $userModel->find($result['user_id']);
+                                    $exam = $examModel->find($result['exam_id']);
+                                    $timeAgo = time_elapsed_string($result['taken_at']);
+                            ?>
+                                <div class="activity-item">
+                                    <div class="activity-icon bg-<?= getScoreColorClass($result['score']) ?>">
+                                        <i class="bi bi-person-check"></i>
+                                    </div>
+                                    <div class="activity-content">
+                                        <p class="mb-1">
+                                            <strong><?= esc($user['name']) ?></strong> menyelesaikan ujian 
+                                            <strong><?= esc($exam['title']) ?></strong>
+                                        </p>
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <span class="badge bg-<?= getScoreColorClass($result['score']) ?>">
+                                                Nilai: <?= $result['score'] ?>
+                                            </span>
+                                            <small class="text-muted"><?= $timeAgo ?></small>
+                                        </div>
+                                    </div>
+                                </div>
+                            <?php endforeach;
+                            endif; ?>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card shadow-sm">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="bi bi-trophy"></i> Top Performers</h5>
+                    </div>
+                    <div class="card-body">
+                        <?php
+                        $topPerformers = $resultModel->select('user_id, MAX(score) as highest_score')
+                                                   ->groupBy('user_id')
+                                                   ->orderBy('highest_score', 'DESC')
+                                                   ->limit(3)
+                                                   ->findAll();
+                        
+                        if (empty($topPerformers)): ?>
+                            <div class="text-center text-muted py-3">
+                                <i class="bi bi-info-circle"></i> Belum ada data performa
+                            </div>
+                        <?php else:
+                            foreach ($topPerformers as $index => $performer):
+                                $user = $userModel->find($performer['user_id']);
+                        ?>
+                            <div class="top-performer-item">
+                                <div class="rank-badge">#<?= $index + 1 ?></div>
+                                <div class="performer-info">
+                                    <h6 class="mb-1"><?= esc($user['name']) ?></h6>
+                                    <div class="progress" style="height: 5px;">
+                                        <div class="progress-bar bg-<?= getScoreColorClass($performer['highest_score']) ?>" 
+                                             role="progressbar" 
+                                             style="width: <?= $performer['highest_score'] ?>%">
+                                        </div>
+                                    </div>
+                                    <small class="text-muted">Nilai: <?= $performer['highest_score'] ?></small>
+                                </div>
+                            </div>
+                        <?php endforeach;
+                        endif; ?>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Cards -->
         <div class="row g-4 mb-4">
             <div class="col-md-4">
@@ -226,7 +321,7 @@
                                     <ul class="pagination">
                                         <?php if ($page > 1): ?>
                                             <li class="page-item">
-                                                <a class="page-link" href="?page=<?= $page - 1 ?>" aria-label="Previous">
+                                                <a class="page-link pagination-link" data-page="<?= $page - 1 ?>" href="javascript:void(0);" aria-label="Previous">
                                                     <span aria-hidden="true">&laquo;</span>
                                                 </a>
                                             </li>
@@ -235,13 +330,13 @@
                                         <?php for ($p = 1; $p <= $total_pages; $p++): ?>
                                             <?php $active = ($p == $page) ? 'active' : ''; ?>
                                             <li class="page-item <?= $active ?>">
-                                                <a class="page-link" href="?page=<?= $p ?>"><?= $p ?></a>
+                                                <a class="page-link pagination-link" data-page="<?= $p ?>" href="javascript:void(0);"><?= $p ?></a>
                                             </li>
                                         <?php endfor; ?>
 
                                         <?php if ($page < $total_pages): ?>
                                             <li class="page-item">
-                                                <a class="page-link" href="?page=<?= $page + 1 ?>" aria-label="Next">
+                                                <a class="page-link pagination-link" data-page="<?= $page + 1 ?>" href="javascript:void(0);" aria-label="Next">
                                                     <span aria-hidden="true">&raquo;</span>
                                                 </a>
                                             </li>
@@ -264,6 +359,147 @@
     <script src="<?= base_url('assets/js/chart.js') ?>"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+    // Add AJAX pagination functionality
+    document.addEventListener('DOMContentLoaded', function() {
+        const paginationLinks = document.querySelectorAll('.pagination-link');
+        
+        paginationLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const page = this.getAttribute('data-page');
+                
+                // AJAX request
+                fetch(`<?= base_url('admin/dashboard') ?>?page=${page}`, {
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(response => response.text())
+                .then(html => {
+                    // Create a temporary element to parse the HTML
+                    const tempElement = document.createElement('div');
+                    tempElement.innerHTML = html;
+                    
+                    // Extract the table content
+                    const newTableContent = tempElement.querySelector('.table-responsive');
+                    const newPagination = tempElement.querySelector('.mt-4.d-flex.justify-content-center');
+                    
+                    // Update just the table and pagination
+                    if (newTableContent) {
+                        document.querySelector('.table-responsive').innerHTML = newTableContent.innerHTML;
+                    }
+                    
+                    if (newPagination) {
+                        document.querySelector('.mt-4.d-flex.justify-content-center').innerHTML = newPagination.innerHTML;
+                        
+                        // Reattach event listeners to new pagination links
+                        const newLinks = document.querySelectorAll('.pagination-link');
+                        newLinks.forEach(newLink => {
+                            newLink.addEventListener('click', arguments.callee);
+                        });
+                    }
+                    
+                    // Update URL without page refresh
+                    history.pushState({}, '', `?page=${page}`);
+                })
+                .catch(error => console.error('Error loading page:', error));
+            });
+        });
+    });
+    </script>
 </body>
 
 </html>
+
+<style>
+/* Activity Feed Styles */
+.activity-feed {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.activity-item {
+    display: flex;
+    align-items: start;
+    padding: 12px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.activity-item:last-child {
+    border-bottom: none;
+}
+
+.activity-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 15px;
+    color: white;
+}
+
+.activity-content {
+    flex: 1;
+}
+
+/* Top Performers Styles */
+.top-performer-item {
+    display: flex;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.top-performer-item:last-child {
+    border-bottom: none;
+}
+
+.rank-badge {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: #f0f0f0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    margin-right: 15px;
+}
+
+.performer-info {
+    flex: 1;
+}
+
+/* Score Color Classes */
+.bg-excellent { background-color: #10B981; }
+.bg-good { background-color: #3B82F6; }
+.bg-average { background-color: #F59E0B; }
+.bg-poor { background-color: #EF4444; }
+</style>
+
+<script>
+// Helper function to format time elapsed
+function time_elapsed_string(datetime) {
+    const now = new Date();
+    const past = new Date(datetime);
+    const diff = Math.floor((now - past) / 1000);
+
+    if (diff < 60) return 'Baru saja';
+    if (diff < 3600) return Math.floor(diff / 60) + ' menit yang lalu';
+    if (diff < 86400) return Math.floor(diff / 3600) + ' jam yang lalu';
+    if (diff < 604800) return Math.floor(diff / 86400) + ' hari yang lalu';
+    return Math.floor(diff / 604800) + ' minggu yang lalu';
+}
+
+// Helper function to get score color class
+function getScoreColorClass(score) {
+    if (score >= 80) return 'excellent';
+    if (score >= 70) return 'good';
+    if (score >= 60) return 'average';
+    return 'poor';
+}
+</script>

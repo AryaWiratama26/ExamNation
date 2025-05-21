@@ -35,9 +35,22 @@ class Peserta extends BaseController
             }
         }
 
+        // Get completed exams count
+        $completedExams = $resultModel
+            ->where('user_id', $userId)
+            ->countAllResults();
+
+        // Get highest score
+        $highestScore = $resultModel
+            ->where('user_id', $userId)
+            ->selectMax('score')
+            ->first();
+
         return view('peserta/dashboard', [
             'session' => $session,
-            'exams' => $filteredExams
+            'exams' => $filteredExams,
+            'completedExams' => $completedExams,
+            'highestScore' => $highestScore ? $highestScore['score'] : 0
         ]);
     }
 
