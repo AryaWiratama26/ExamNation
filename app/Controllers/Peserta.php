@@ -21,7 +21,8 @@ class Peserta extends BaseController
         $examModel = new ExamModel();
         $resultModel = new ResultModel();
 
-        $exams = $examModel->findAll();
+        // Only get published exams
+        $exams = $examModel->where('exam_stat', 'published')->findAll();
 
         $filteredExams = [];
         foreach ($exams as $exam) {
@@ -78,9 +79,10 @@ class Peserta extends BaseController
         $examModel = new ExamModel();
         $questionModel = new QuestionModel();
 
-        $exam = $examModel->find($id);
+        // Only allow access to published exams
+        $exam = $examModel->where('exam_stat', 'published')->find($id);
         if (!$exam) {
-            throw PageNotFoundException::forPageNotFound();
+            throw PageNotFoundException::forPageNotFound('Ujian tidak ditemukan atau belum dipublikasi.');
         }
 
         $questions = $questionModel->where('exam_id', $id)->findAll();
@@ -174,460 +176,684 @@ class Peserta extends BaseController
 
     public function downloadHistoryPdf()
     {
-        // Increase memory limit
+        // Increase memory limit and set time limit
         ini_set('memory_limit', '512M');
+        set_time_limit(300); // 5 minutes
 
-        $resultModel = new ResultModel();
-        $examModel = new ExamModel();
+        // Get user data and exam history
         $userId = session()->get('user_id');
         $userModel = new \App\Models\UserModel();
-        $user = $userModel->find($userId);
+        $resultModel = new ResultModel();
+        $examModel = new ExamModel();
 
-        // Limit results to the most recent 50 exams to reduce memory usage
+        $user = $userModel->find($userId);
         $results = $resultModel->where('user_id', $userId)
             ->orderBy('taken_at', 'DESC')
             ->limit(50)
             ->findAll();
 
+        // Process exam results
         foreach ($results as &$result) {
             $exam = $examModel->find($result['exam_id']);
             $result['exam_title'] = $exam ? $exam['title'] : 'Ujian Tidak Ditemukan';
         }
 
-        // Calculate statistics if there are results
-        $totalExams = 0;
-        $avgScore = 0;
-        $highestScore = 0;
+        // Calculate statistics
+        $stats = $this->calculateExamStatistics($results);
 
-        if (!empty($results)) {
-            $totalExams = count($results);
-            $totalScore = array_sum(array_column($results, 'score'));
-            $avgScore = round($totalScore / $totalExams, 1);
-            $highestScore = max(array_column($results, 'score'));
-        }
-
-        // Generate simplified but elegant HTML for PDF
-        $html = '
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <title>Transkrip Akademik</title>
-    <style>
-        body {
-            font-family: Arial, Helvetica, sans-serif;
-            color: #333;
-            line-height: 1.5;
-            margin: 0;
-            padding: 0;
-        }
-        
-        /* Header */
-        .header {
-            background-color: #6366F1;
-            color: white;
-            padding: 25px 30px;
-            border-bottom: 5px solid #4F46E5;
-        }
-        
-        .logo-text {
-            font-size: 14px;
-            font-weight: bold;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            margin: 0 0 15px 0;
-            padding-left: 8px;
-            border-left: 3px solid rgba(255, 255, 255, 0.7);
-        }
-        
-        .document-title {
-            font-size: 26px;
-            font-weight: bold;
-            margin: 0 0 8px 0;
-        }
-        
-        .document-subtitle {
-            font-size: 15px;
-            margin: 0;
-            opacity: 0.9;
-        }
-        
-        /* Content */
-        .content {
-            padding: 30px;
-        }
-        
-        .section {
-            margin-bottom: 30px;
-            border-radius: 8px;
-            border: 1px solid #E5E7EB;
-            overflow: hidden;
-        }
-        
-        .section-header {
-            background-color: #F9FAFB;
-            padding: 12px 20px;
-            border-bottom: 1px solid #E5E7EB;
-        }
-        
-        .section-title {
-            font-size: 16px;
-            font-weight: bold;
-            color: #4B5563;
-            margin: 0;
-        }
-        
-        .section-body {
-            padding: 20px;
-            background-color: #FFFFFF;
-        }
-        
-        /* User information */
-        .user-info {
-            display: flex;
-            flex-wrap: wrap;
-            margin-bottom: 15px;
-        }
-        
-        .info-block {
-            flex: 1 1 220px;
-            margin: 0 10px 10px 0;
-            padding: 12px;
-            background-color: #F9FAFB;
-            border-radius: 6px;
-            border-left: 3px solid #6366F1;
-        }
-        
-        .info-label {
-            font-size: 12px;
-            color: #6B7280;
-            text-transform: uppercase;
-            margin: 0 0 5px 0;
-            font-weight: bold;
-        }
-        
-        .info-value {
-            font-size: 14px;
-            color: #111827;
-            margin: 0;
-            font-weight: 500;
-        }
-        
-        /* Stats */
-        .stats-container {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 15px;
-        }
-        
-        .stat-item {
-            flex: 1;
-            padding: 15px;
-            text-align: center;
-            background-color: #F9FAFB;
-            margin-right: 10px;
-            border-radius: 6px;
-            border: 1px solid #E5E7EB;
-        }
-        
-        .stat-item:last-child {
-            margin-right: 0;
-        }
-        
-        .stat-number {
-            font-size: 24px;
-            font-weight: bold;
-            color: #4F46E5;
-            margin: 0 0 5px 0;
-        }
-        
-        .stat-label {
-            font-size: 12px;
-            color: #6B7280;
-            text-transform: uppercase;
-            margin: 0;
-            font-weight: bold;
-        }
-        
-        /* Table */
-        .data-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 14px;
-        }
-        
-        .data-table th {
-            background-color: #F9FAFB;
-            color: #374151;
-            padding: 12px 15px;
-            text-align: left;
-            font-weight: bold;
-            border-bottom: 2px solid #E5E7EB;
-        }
-        
-        .data-table td {
-            padding: 12px 15px;
-            border-bottom: 1px solid #E5E7EB;
-        }
-        
-        .data-table tr:last-child td {
-            border-bottom: none;
-        }
-        
-        .data-table tr:nth-child(even) {
-            background-color: #F9FAFB;
-        }
-        
-        /* Score indicators */
-        .score {
-            display: inline-block;
-            padding: 5px 10px;
-            border-radius: 4px;
-            font-weight: bold;
-            font-size: 13px;
-        }
-        
-        .score-excellent {
-            background-color: #D1FAE5;
-            color: #065F46;
-        }
-        
-        .score-good {
-            background-color: #DBEAFE;
-            color: #1E40AF;
-        }
-        
-        .score-average {
-            background-color: #FEF3C7;
-            color: #92400E;
-        }
-        
-        .score-needs-improvement {
-            background-color: #FEE2E2;
-            color: #B91C1C;
-        }
-        
-        /* Footer */
-        .footer {
-            background-color: #1F2937;
-            padding: 20px;
-            text-align: center;
-            color: #D1D5DB;
-            font-size: 12px;
-        }
-        
-        .footer-text {
-            margin: 0 0 10px 0;
-        }
-        
-        .document-id {
-            font-family: monospace;
-            background: rgba(255,255,255,0.1);
-            padding: 5px 10px;
-            border-radius: 4px;
-            display: inline-block;
-        }
-        
-        .empty-data {
-            text-align: center;
-            padding: 30px;
-            color: #6B7280;
-            font-style: italic;
-        }
-        
-        /* Signature */
-        .signature {
-            text-align: right;
-            margin-top: 30px;
-            padding-right: 20px;
-        }
-        
-        .signature-line {
-            width: 150px;
-            height: 1px;
-            background-color: #9CA3AF;
-            margin: 30px 0 10px auto;
-        }
-        
-        .signature-name {
-            font-size: 14px;
-            font-weight: bold;
-            margin: 5px 0 2px 0;
-        }
-        
-        .signature-title {
-            font-size: 12px;
-            color: #6B7280;
-            margin: 0;
-        }
-        
-        .page-number {
-            text-align: right;
-            font-size: 12px;
-            color: #9CA3AF;
-            margin-top: 20px;
-        }
-    </style>
-</head>
-<body>
-    <div class="header">
-        <p class="logo-text">EDUTECH ACADEMY</p>
-        <h1 class="document-title">Transkrip Akademik</h1>
-        <p class="document-subtitle">Rekam Jejak Performa dan Pencapaian</p>
-    </div>
-    
-    <div class="content">
-        <div class="section">
-            <div class="section-header">
-                <h2 class="section-title">Informasi Peserta</h2>
-            </div>
-            <div class="section-body">
-                <div class="user-info">
-                    <div class="info-block">
-                        <p class="info-label">Nama Lengkap</p>
-                        <p class="info-value">' . esc($user['name'] ?? 'Peserta') . '</p>
-                    </div>
-                    <div class="info-block">
-                        <p class="info-label">ID Peserta</p>
-                        <p class="info-value">' . esc($userId) . '</p>
-                    </div>
-                    <div class="info-block">
-                        <p class="info-label">Email</p>
-                        <p class="info-value">' . esc($user['email'] ?? '-') . '</p>
-                    </div>
-                    <div class="info-block">
-                        <p class="info-label">Tanggal Diterbitkan</p>
-                        <p class="info-value">' . date('d F Y') . '</p>
-                    </div>
-                </div>
-            </div>
-        </div>';
-
-        if (!empty($results)) {
-            $html .= '
-        <div class="section">
-            <div class="section-header">
-                <h2 class="section-title">Ringkasan Pencapaian</h2>
-            </div>
-            <div class="section-body">
-                <div class="stats-container">
-                    <div class="stat-item">
-                        <p class="stat-number">' . $totalExams . '</p>
-                        <p class="stat-label">Total Ujian</p>
-                    </div>
-                    <div class="stat-item">
-                        <p class="stat-number">' . $avgScore . '</p>
-                        <p class="stat-label">Nilai Rata-rata</p>
-                    </div>
-                    <div class="stat-item">
-                        <p class="stat-number">' . $highestScore . '</p>
-                        <p class="stat-label">Nilai Tertinggi</p>
-                    </div>
-                </div>
-            </div>
-        </div>';
-        }
-
-        $html .= '
-        <div class="section">
-            <div class="section-header">
-                <h2 class="section-title">Riwayat Ujian</h2>
-            </div>
-            <div class="section-body">
-                <table class="data-table">
-                    <thead>
-                        <tr>
-                            <th style="width: 50%;">Judul Ujian</th>
-                            <th style="width: 20%;">Nilai</th>
-                            <th style="width: 30%;">Tanggal Pengerjaan</th>
-                        </tr>
-                    </thead>
-                    <tbody>';
-
-        if (!empty($results)) {
-            foreach ($results as $res) {
-                $scoreClass = '';
-                $score = $res['score'];
-                $scoreText = '';
-
-                if ($score >= 80) {
-                    $scoreClass = 'score-excellent';
-                    $scoreText = 'Sangat Baik';
-                } elseif ($score >= 70) {
-                    $scoreClass = 'score-good';
-                    $scoreText = 'Baik';
-                } elseif ($score >= 60) {
-                    $scoreClass = 'score-average';
-                    $scoreText = 'Cukup';
-                } else {
-                    $scoreClass = 'score-needs-improvement';
-                    $scoreText = 'Perlu Perbaikan';
-                }
-
-                $html .= '<tr>
-            <td>' . esc($res['exam_title']) . '</td>
-            <td><span class="score ' . $scoreClass . '">' . esc($score) . ' - ' . $scoreText . '</span></td>
-            <td>' . date('d F Y H:i', strtotime($res['taken_at'])) . ' WIB</td>
-          </tr>';
-            }
-        } else {
-            $html .= '<tr><td colspan="3" class="empty-data">Belum ada riwayat ujian.</td></tr>';
-        }
-
-        $html .= '</tbody>
-                </table>
-            </div>
-        </div>
-        
-        <div class="signature">
-            <div class="signature-line"></div>
-            <p class="signature-name">Admin Sistem</p>
-            <p class="signature-title">Kepala Akademik</p>
-        </div>
-        
-        <div class="page-number">Halaman 1 dari 1</div>
-    </div>
-    
-    <div class="footer">
-        <p class="footer-text">Dokumen ini diterbitkan secara elektronik dan sah tanpa tanda tangan basah</p>
-        <div class="document-id">ID: EDTC-' . time() . '-' . str_pad($userId, 4, '0', STR_PAD_LEFT) . '</div>
-    </div>
-</body>
-</html>';
-
-        // Create PDF with optimized options
-        $options = new \Dompdf\Options();
-        $options->set('isHtml5ParserEnabled', true);
-        $options->set('isRemoteEnabled', false); // Disable remote files
-        $options->set('defaultFont', 'Arial');
-        $options->set('isPhpEnabled', false);    // Disable PHP code execution
-        $options->set('debugKeepTemp', false);   // Don't keep temporary files
-        $options->set('debugCss', false);        // Disable CSS debugging
-        $options->set('debugLayout', false);     // Disable layout debugging
+        // Generate PDF content
+        $html = $this->generatePdfHtml($user, $results, $stats);
 
         try {
-            // Create PDF with optimized options
+            // Configure PDF options
+            $options = new \Dompdf\Options();
+            $options->set([
+                'isHtml5ParserEnabled' => true,
+                'isRemoteEnabled' => false,
+                'defaultFont' => 'dejavusans',
+                'isPhpEnabled' => false,
+                'debugKeepTemp' => false,
+                'debugCss' => false,
+                'debugLayout' => false,
+                'chroot' => FCPATH,
+                'defaultMediaType' => 'screen',
+                'fontCache' => WRITEPATH . 'fonts/',
+                'tempDir' => WRITEPATH . 'temp/'
+            ]);
+
+            // Create and configure PDF
             $dompdf = new \Dompdf\Dompdf($options);
             $dompdf->loadHtml($html);
             $dompdf->setPaper('A4', 'portrait');
             $dompdf->render();
 
-            // Output PDF for download
-            $filename = 'Transkrip_Akademik_' . date('Ymd') . '_' . $userId . '.pdf';
+            // Stream PDF for download
+            $filename = 'Transkrip_Akademik_' . $user['name'] . '_' . date('Ymd_His') . '.pdf';
             $dompdf->stream($filename, ['Attachment' => true]);
 
             // Clean up
-            $dompdf = null;
-            unset($dompdf);
-            unset($html);
-            unset($results);
-            gc_collect_cycles();
+            $this->cleanup($dompdf, $html, $results);
+
         } catch (\Exception $e) {
             log_message('error', 'PDF Generation Error: ' . $e->getMessage());
             return redirect()->back()->with('error', 'Gagal membuat PDF. Silakan coba lagi nanti.');
         }
     }
-    
+
+    private function calculateExamStatistics($results)
+    {
+        if (empty($results)) {
+            return [
+                'totalExams' => 0,
+                'avgScore' => 0,
+                'highestScore' => 0,
+                'lowestScore' => 0,
+                'recentScore' => 0
+            ];
+        }
+
+        $scores = array_column($results, 'score');
+        return [
+            'totalExams' => count($results),
+            'avgScore' => round(array_sum($scores) / count($scores), 1),
+            'highestScore' => max($scores),
+            'lowestScore' => min($scores),
+            'recentScore' => $results[0]['score'] // Most recent score
+        ];
+    }
+
+    private function getPdfStyles()
+    {
+        return '
+        @page {
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: dejavusans, sans-serif;
+            line-height: 1.6;
+            color: #000000;
+            margin: 0;
+            padding: 0;
+            background: #FFFFFF;
+        }
+
+        .page-break {
+            page-break-before: always;
+        }
+
+        .no-break {
+            page-break-inside: avoid;
+        }
+
+        .header {
+            background: #003366;
+            color: white;
+            padding: 2.5em 3em;
+            position: relative;
+            overflow: hidden;
+            page-break-after: avoid;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1.5em;
+            position: relative;
+            z-index: 2;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 1em;
+            border-radius: 10px;
+        }
+
+        .logo {
+            width: 80px;
+            height: auto;
+            margin-right: 1.5em;
+            background: white;
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .header-text {
+            border-left: 4px solid #FFFFFF;
+            padding-left: 1.5em;
+        }
+
+        .institution {
+            font-size: 32px;
+            margin: 0;
+            font-weight: bold;
+            letter-spacing: 0.5px;
+            color: #FFFFFF;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .subtitle {
+            margin: 0.3em 0 0;
+            font-size: 18px;
+            letter-spacing: 0.5px;
+            color: #FFFFFF;
+        }
+
+        .document-info {
+            margin-top: 2em;
+            padding-top: 1.5em;
+            border-top: 2px solid #FFFFFF;
+        }
+
+        .document-title {
+            font-size: 36px;
+            margin: 0;
+            font-weight: bold;
+            letter-spacing: 0.5px;
+            color: #FFFFFF;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .document-subtitle {
+            margin: 0.5em 0 0;
+            font-size: 20px;
+            color: #FFFFFF;
+        }
+
+        .content {
+            padding: 3em;
+            background: white;
+            position: relative;
+            margin-top: -2em;
+            border-radius: 15px 15px 0 0;
+            box-shadow: 0 -5px 20px rgba(0,0,0,0.2);
+        }
+
+        .section {
+            margin-bottom: 2.5em;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border: 2px solid #003366;
+            overflow: hidden;
+        }
+
+        .section-header {
+            background: #003366;
+            padding: 1.2em 1.5em;
+            border-bottom: 3px solid #002347;
+        }
+
+        .section-header h3 {
+            margin: 0;
+            color: white;
+            font-size: 1.25em;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+        }
+
+        .section-header h3::before {
+            content: "";
+            display: inline-block;
+            width: 4px;
+            height: 1em;
+            background: #FFFFFF;
+            margin-right: 0.8em;
+            border-radius: 2px;
+            box-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5em;
+            padding: 1.5em;
+            background: #F0F8FF;
+        }
+
+        .info-item {
+            background: white;
+            padding: 1.2em;
+            border-radius: 8px;
+            border: 2px solid #003366;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .label {
+            color: #003366;
+            font-size: 0.875em;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.5em;
+        }
+
+        .value {
+            color: #000000;
+            font-size: 1.1em;
+            font-weight: 600;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.2em;
+            padding: 1.5em;
+            background: #F0F8FF;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 10px;
+            padding: 1.5em 1.2em;
+            text-align: center;
+            border: 2px solid #003366;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+            border-color: #0066CC;
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: bold;
+            color: #003366;
+            margin-bottom: 0.3em;
+            text-shadow: 1px 1px 1px rgba(0,0,0,0.1);
+        }
+
+        .stat-label {
+            color: #000000;
+            font-size: 0.875em;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .history-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin: 1em 0;
+        }
+
+        .history-table th,
+        .history-table td {
+            padding: 1em 1.2em;
+            text-align: left;
+            border: 1px solid #003366;
+        }
+
+        .history-table th {
+            background: #003366;
+            font-weight: 600;
+            color: white;
+            font-size: 0.95em;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 3px solid #002347;
+        }
+
+        .history-table tr:nth-child(even) {
+            background: #F0F8FF;
+        }
+
+        .history-table tr:hover {
+            background: #E6F3FF;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.5em 1em;
+            border-radius: 20px;
+            font-size: 0.875em;
+            font-weight: 700;
+            text-align: center;
+            min-width: 120px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border: 2px solid;
+        }
+
+        .badge-excellent {
+            background: #00CC66;
+            color: #FFFFFF;
+            border-color: #009933;
+        }
+
+        .badge-good {
+            background: #3399FF;
+            color: #FFFFFF;
+            border-color: #0066CC;
+        }
+
+        .badge-average {
+            background: #FFCC00;
+            color: #000000;
+            border-color: #CC9900;
+        }
+
+        .badge-poor {
+            background: #FF3333;
+            color: #FFFFFF;
+            border-color: #CC0000;
+        }
+
+        .signature-section {
+            margin: 4em 0 2em;
+            text-align: right;
+            padding-right: 2em;
+        }
+
+        .signature-box {
+            display: inline-block;
+            text-align: center;
+            padding: 2em;
+            background: #F0F8FF;
+            border-radius: 8px;
+            border: 2px solid #003366;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .signature-date {
+            color: #000000;
+            margin-bottom: 0.5em;
+            font-weight: 600;
+        }
+
+        .signature-title {
+            color: #003366;
+            font-size: 0.9em;
+            margin-bottom: 2em;
+            font-weight: 600;
+        }
+
+        .signature-line {
+            width: 200px;
+            border-bottom: 2px solid #003366;
+            margin: 0 auto 1em;
+        }
+
+        .signature-name {
+            font-weight: 700;
+            color: #000000;
+            font-size: 1.1em;
+        }
+
+        .footer {
+            background: #003366;
+            color: #FFFFFF;
+            padding: 2em;
+            text-align: center;
+            position: relative;
+            margin-top: 3em;
+        }
+
+        .footer::before {
+            content: "";
+            position: absolute;
+            top: -20px;
+            left: 0;
+            right: 0;
+            height: 20px;
+            background: linear-gradient(to bottom right, transparent 49%, #003366 50%);
+        }
+
+        .footer-text {
+            margin-bottom: 1em;
+            font-size: 0.95em;
+            color: #FFFFFF;
+            font-weight: 500;
+        }
+
+        .document-id {
+            font-family: monospace;
+            background: rgba(255,255,255,0.15);
+            padding: 0.8em 1.5em;
+            border-radius: 6px;
+            display: inline-block;
+            font-size: 0.95em;
+            letter-spacing: 1px;
+            border: 2px solid rgba(255,255,255,0.3);
+            color: #FFFFFF;
+            font-weight: 600;
+        }
+
+        .empty-message {
+            text-align: center;
+            color: #003366;
+            font-style: italic;
+            padding: 3em;
+            background: #F0F8FF;
+            border-radius: 8px;
+            margin: 1em;
+            border: 2px dashed #003366;
+            font-weight: 500;
+        }
+
+        .score {
+            font-weight: 700;
+            font-size: 1.2em;
+            color: #003366;
+        }';
+    }
+
+    private function generatePdfHtml($user, $results, $stats)
+    {
+        $css = $this->getPdfStyles();
+        
+        $html = '<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Transkrip Akademik</title>
+    <style>' . $css . '</style>
+</head>
+<body>
+    <!-- First Page -->
+    <div class="no-break">
+        <div class="header">
+            <div class="logo-container">
+                <img src="' . FCPATH . 'assets/images/logo.png" class="logo" alt="Logo">
+                <div class="header-text">
+                    <h1 class="institution">EXAMINATION</h1>
+                    <p class="subtitle">Platform Ujian Online Terpercaya</p>
+                </div>
+            </div>
+            <div class="document-info">
+                <h2 class="document-title">Transkrip Akademik</h2>
+                <p class="document-subtitle">Laporan Hasil Pembelajaran & Pencapaian</p>
+            </div>
+        </div>
+
+        <div class="content">
+            <!-- Student Information Section -->
+            <div class="section no-break">
+                <div class="section-header">
+                    <h3>Informasi Peserta</h3>
+                </div>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <div class="label">Nama Lengkap</div>
+                        <div class="value">' . esc($user['name']) . '</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="label">Email</div>
+                        <div class="value">' . esc($user['email']) . '</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="label">ID Peserta</div>
+                        <div class="value">' . str_pad($user['id'], 5, '0', STR_PAD_LEFT) . '</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="label">Tanggal Cetak</div>
+                        <div class="value">' . date('d F Y H:i') . ' WIB</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Performance Summary Section -->
+            <div class="section no-break">
+                <div class="section-header">
+                    <h3>Ringkasan Performa</h3>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value">' . $stats['totalExams'] . '</div>
+                        <div class="stat-label">Total Ujian</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">' . $stats['avgScore'] . '</div>
+                        <div class="stat-label">Rata-rata Nilai</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">' . $stats['highestScore'] . '</div>
+                        <div class="stat-label">Nilai Tertinggi</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">' . $stats['recentScore'] . '</div>
+                        <div class="stat-label">Nilai Terakhir</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Second Page - Exam History -->
+    <div class="page-break"></div>
+    <div class="no-break">
+        <div class="header" style="padding: 1.5em 3em;">
+            <div class="logo-container" style="margin-bottom: 0;">
+                <img src="' . FCPATH . 'assets/images/logo.png" class="logo" alt="Logo" style="width: 60px;">
+                <div class="header-text">
+                    <h1 class="institution" style="font-size: 24px;">EXAMINATION</h1>
+                </div>
+            </div>
+        </div>
+
+        <div class="content">
+            <div class="section no-break">
+                <div class="section-header">
+                    <h3>Riwayat Ujian</h3>
+                </div>
+                <table class="history-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 5%">No.</th>
+                            <th style="width: 40%">Nama Ujian</th>
+                            <th style="width: 15%">Nilai</th>
+                            <th style="width: 20%">Kategori</th>
+                            <th style="width: 20%">Tanggal</th>
+                        </tr>
+                    </thead>
+                    <tbody>';
+
+        if (!empty($results)) {
+            $no = 1;
+            foreach ($results as $result) {
+                $scoreCategory = $this->getScoreCategory($result['score']);
+                $html .= '
+                        <tr>
+                            <td>' . $no++ . '</td>
+                            <td>' . esc($result['exam_title']) . '</td>
+                            <td class="score">' . $result['score'] . '</td>
+                            <td><span class="badge ' . $scoreCategory['class'] . '">' . $scoreCategory['label'] . '</span></td>
+                            <td>' . date('d/m/Y H:i', strtotime($result['taken_at'])) . '</td>
+                        </tr>';
+
+                // Add page break every 10 items
+                if ($no % 10 === 0 && $no !== count($results)) {
+                    $html .= '
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="page-break"></div>
+    <div class="no-break">
+        <div class="header" style="padding: 1.5em 3em;">
+            <div class="logo-container" style="margin-bottom: 0;">
+                <img src="' . FCPATH . 'assets/images/logo.png" class="logo" alt="Logo" style="width: 60px;">
+                <div class="header-text">
+                    <h1 class="institution" style="font-size: 24px;">EXAMINATION</h1>
+                </div>
+            </div>
+        </div>
+        <div class="content">
+            <div class="section no-break">
+                <div class="section-header">
+                    <h3>Riwayat Ujian (Lanjutan)</h3>
+                </div>
+                <table class="history-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 5%">No.</th>
+                            <th style="width: 40%">Nama Ujian</th>
+                            <th style="width: 15%">Nilai</th>
+                            <th style="width: 20%">Kategori</th>
+                            <th style="width: 20%">Tanggal</th>
+                        </tr>
+                    </thead>
+                    <tbody>';
+                }
+            }
+        } else {
+            $html .= '<tr><td colspan="5"><div class="empty-message">Belum ada riwayat ujian</div></td></tr>';
+        }
+
+        $html .= '
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="signature-section no-break">
+                <div class="signature-box">
+                    <p class="signature-date">Jakarta, ' . date('d F Y') . '</p>
+                    <p class="signature-title">Kepala Akademik</p>
+                    <div class="signature-line"></div>
+                    <p class="signature-name">Admin ExamNation</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p class="footer-text">Dokumen ini diterbitkan secara digital oleh ExamNation</p>
+        <p class="footer-text">Verifikasi keaslian dokumen dapat dilakukan melalui website ExamNation</p>
+        <div class="document-id">ID: EXNTN-' . time() . '-' . str_pad($user['id'], 4, '0', STR_PAD_LEFT) . '</div>
+    </div>
+</body>
+</html>';
+
+        return $html;
+    }
+
+    private function getScoreCategory($score)
+    {
+        if ($score >= 85) {
+            return ['class' => 'badge-excellent', 'label' => 'Sangat Baik'];
+        } elseif ($score >= 75) {
+            return ['class' => 'badge-good', 'label' => 'Baik'];
+        } elseif ($score >= 60) {
+            return ['class' => 'badge-average', 'label' => 'Cukup'];
+        } else {
+            return ['class' => 'badge-poor', 'label' => 'Perlu Perbaikan'];
+        }
+    }
+
+    private function cleanup(&$dompdf, &$html, &$results)
+    {
+        $dompdf = null;
+        $html = null;
+        $results = null;
+        unset($dompdf, $html, $results);
+        gc_collect_cycles();
+    }
+
     public function showResult()
     {
         return view('peserta/result');
