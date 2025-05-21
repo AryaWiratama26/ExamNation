@@ -123,3 +123,5 @@ CREATE TABLE results (
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (exam_id) REFERENCES exams(id) ON DELETE CASCADE
 );
+
+ALTER TABLE exams ADD COLUMN status ENUM('active', 'inactive') NOT NULL DEFAULT 'active';
