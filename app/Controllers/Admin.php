@@ -5,6 +5,7 @@ use App\Models\ExamModel;
 use App\Models\UserModel;
 use App\Models\QuestionModel;
 use App\Models\AdminModel;
+use App\Models\ResultModel;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use Config\Database;
 use App\Libraries\SpreadsheetWriter;
@@ -19,20 +20,55 @@ class Admin extends BaseController
     }
     public function dashboard()
     {
+        helper('dashboard');
         $adminModel = new AdminModel();
         $spreadsheet = new SpreadsheetWriter();
+        $resultModel = new ResultModel();
 
-        // Ambil semua data
+        // Get latest exam results for activity feed
+        $latestResults = $resultModel->orderBy('taken_at', 'DESC')
+                                   ->limit(5)
+                                   ->findAll();
+
+        // Get top performers
+        $topPerformers = $resultModel->select('user_id, MAX(score) as highest_score')
+                                   ->groupBy('user_id')
+                                   ->orderBy('highest_score', 'DESC')
+                                   ->limit(3)
+                                   ->findAll();
+
+        // Get exam completion rate
+        $totalExams = $adminModel->getTotalExams();
+        $totalUsers = $adminModel->getTotalUsers();
+        $totalResults = $resultModel->countAllResults();
+        $completionRate = $totalExams > 0 ? round(($totalResults / ($totalExams * $totalUsers)) * 100, 1) : 0;
+
+        // Get average score per exam
+        $examStats = $resultModel->select('exam_id, AVG(score) as avg_score, COUNT(*) as total_takers')
+                               ->groupBy('exam_id')
+                               ->findAll();
+
+        // Get weekly exam participation
+        $weeklyStats = $resultModel->select("DATE(taken_at) as date, COUNT(*) as total")
+                                 ->where('taken_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)')
+                                 ->groupBy('DATE(taken_at)')
+                                 ->findAll();
+
+        // Prepare data for the view
         $data = [
             'total_users' => $adminModel->getTotalUsers(),
             'total_exams' => $adminModel->getTotalExams(),
             'active_exams' => $adminModel->getActiveExams(),
             'average_score' => $adminModel->getAverageScore(),
             'weekly_exam_stats' => $adminModel->getWeeklyExamStats(),
-            'rows' => $spreadsheet->getAllRows(), // Tambahkan data dari Spreadsheet
+            'rows' => $spreadsheet->getAllRows(),
+            'latest_results' => $latestResults,
+            'top_performers' => $topPerformers,
+            'completion_rate' => $completionRate,
+            'exam_stats' => $examStats,
+            'weekly_stats' => $weeklyStats
         ];
 
-        // Sekali return saja
         return view('admin/dashboard', $data);
     }
 
