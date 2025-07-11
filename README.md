@@ -41,14 +41,14 @@
 ## 🖼️ Tampilan Aplikasi
 
 ### 🏠 Homepage
-![Homepage](/ss/homepage.png)
+![Homepage](/ss/homepage-1.png)
 
 ---
 
 ### 🔐 Login & 📝 Register (dengan dark mode)
 <div align="center">
-  <img src="/ss/login.png" width="48%">
-  <img src="/ss/register.png" width="48%">
+  <img src="/ss/login-1.png" width="48%">
+  <img src="/ss/register-1.png" width="48%">
 </div>
 
 ---
@@ -57,12 +57,13 @@
 
 | Fitur                     | Gambar |
 |--------------------------|--------|
-| 📊 Dashboard Admin        | ![Dashboard Admin](/ss/admin_dashboard.png) |
-| 👥 Kelola User            | ![Kelola User](/ss/kelola-user.png) |
-| 📚 Kelola Ujian           | ![Kelola Ujian](/ss/kelola-ujian.png) |
-| ➕ Tambah Ujian           | ![Tambah Ujian](/ss/tambah-ujian.png) |
-| ➕ Tambah Soal            | ![Tambah Soal](/ss/tambah-soal.png) |
-| ✏️ Edit Ujian             | ![Edit Ujian](/ss/edit-ujian.png) |
+| 📊 Dashboard Admin        | ![Dashboard Admin](/ss/admin_dashboard-1.png) |
+| 👥 Kelola User            | ![Kelola User](/ss/kelola_pengguna-1.png) |
+| 📚 Kelola Ujian           | ![Kelola Ujian](/ss/kelola_ujian-1.png) |
+| ➕ Tambah Ujian           | ![Tambah Ujian](/ss/tambah_ujian-1.png) |
+| ➕ Tambah Soal            | ![Tambah Soal](/ss/tambah_soal-1.png) |
+| ✏️ Edit Ujian             | ![Edit Ujian](/ss/edit_ujian-1.png) |
+| ⚠️ Monitoring Pelanggaran | ![Monitoring Pelanggaran](/ss/monitoring_pelanggaran-1.png)|
 
 ---
 
@@ -70,8 +71,8 @@
 
 | Fitur                  | Gambar |
 |-----------------------|--------|
-| 🏁 Dashboard Peserta   | ![Dashboard Peserta](/ss/peserta_dashboard.png) |
-| 📜 History Peserta   | ![Dashboard Peserta](/ss/history.png) |
+| 🏁 Dashboard Peserta   | ![Dashboard Peserta](/ss/dashboard_peserta-1.png) |
+| 📜 History Peserta   | ![Dashboard Peserta](/ss/peserta_riwayat-1.png) |
 
 ---
 
