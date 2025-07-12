@@ -82,26 +82,31 @@
 CREATE DATABASE examnation_db;
 USE examnation_db;
 
+-- Tabel users
 CREATE TABLE users (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     email VARCHAR(100) UNIQUE NOT NULL,
     password VARCHAR(255) NOT NULL,
-    role ENUM('admin', 'participant') NOT NULL DEFAULT 'participant',
+    role ENUM('admin', 'peserta') NOT NULL DEFAULT 'peserta',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Tabel exams
 CREATE TABLE exams (
     id INT AUTO_INCREMENT PRIMARY KEY,
     title VARCHAR(255) NOT NULL,
     description TEXT,
     total_questions INT NOT NULL,
-    duration INT NOT NULL, 
+    duration INT NOT NULL, -- dalam menit
     created_by INT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    status ENUM('active', 'inactive') NOT NULL DEFAULT 'active',
+    exam_stat ENUM('draft', 'published') NOT NULL DEFAULT 'draft',
     FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE CASCADE
 );
 
+-- Tabel questions
 CREATE TABLE questions (
     id INT AUTO_INCREMENT PRIMARY KEY,
     exam_id INT NOT NULL,
@@ -115,6 +120,7 @@ CREATE TABLE questions (
     FOREIGN KEY (exam_id) REFERENCES exams(id) ON DELETE CASCADE
 );
 
+-- Tabel results
 CREATE TABLE results (
     id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
@@ -125,8 +131,7 @@ CREATE TABLE results (
     FOREIGN KEY (exam_id) REFERENCES exams(id) ON DELETE CASCADE
 );
 
-ALTER TABLE exams ADD COLUMN status ENUM('active', 'inactive') NOT NULL DEFAULT 'active';
-
+-- Tabel log aktivitas peserta saat ujian
 CREATE TABLE exam_activity_logs (
     id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
@@ -136,8 +141,4 @@ CREATE TABLE exam_activity_logs (
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (exam_id) REFERENCES exams(id) ON DELETE CASCADE
 );
-
-ALTER TABLE exams ADD COLUMN exam_stat ENUM('draft', 'published') NOT NULL DEFAULT 'draft';
-
-ALTER TABLE examnation_db.users MODIFY COLUMN role ENUM('admin', 'peserta') NOT NULL DEFAULT 'peserta';
 ```
