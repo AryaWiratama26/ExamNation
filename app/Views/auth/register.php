@@ -51,13 +51,13 @@
                     </div>
                     
                     <div class="form-group">
-                        <label for="role">Pilih Peran</label>
+                        <!-- <label for="role">Pilih Peran</label>
                         <div class="select-wrapper">
                             <select id="role" name="role">
                                 <option value="peserta">Peserta</option>
-                                <!-- <option value="admin">Admin</option> -->
+                                <option value="admin">Admin</option>
                             </select>
-                        </div>
+                        </div> -->
                     </div>
                     
                     <div class="terms-privacy">
