@@ -76,6 +76,16 @@
 
 ---
 
+
+## Tim Pengembang
+
+| Nama                         | NIM           | Role |
+|------------------------------|---------------|----- |
+| Arya Wiratama                | 312310224     | Backend & Frontend |
+| Farel Aryaduta Daniswara     | 312310810     | Frontend & Backend | 
+| Andrian Lusmana              | 312310199     | Examination Designer |
+| Yudi Gunawan                 | 312310179     | Project Manager |
+
 ## Struktur Database
 
 ```sql
