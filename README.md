@@ -1,4 +1,4 @@
-<h1 align="center">🎓 Examination</h1>
+<h1 align="center">Examination</h1>
 
 <p align="center">
   <strong>Aplikasi Ujian Online Berbasis Web</strong><br>
@@ -14,38 +14,38 @@
 
 ---
 
-## 🚀 Fitur Utama
+## Fitur Utama
 
-- 🔐 **Autentikasi** dengan fitur register dan login
-- 🌗 **Dark Mode** pada login & register
-- 👨‍🏫 **Admin Panel** untuk kelola user, ujian, dan soal
-- 📝 **Tambah & Edit Soal Ujian**
-- ⏳ **Timer Otomatis** untuk setiap ujian
-- 📈 **Rekap Nilai** Peserta yang sudah selesai otomatis terekap pada Spreadsheet
-- 🧪 **Multiple Choice Questions (MCQ)**
+- **Autentikasi** dengan fitur register dan login
+- **Dark Mode** pada login & register
+- **Admin Panel** untuk kelola user, ujian, dan soal
+- **Tambah & Edit Soal Ujian**
+- **Timer Otomatis** untuk setiap ujian
+- **Rekap Nilai** Peserta yang sudah selesai otomatis terekap pada Spreadsheet
+- **Multiple Choice Questions (MCQ)**
 
 ---
 
-## 🧰 Teknologi yang Digunakan
+## Teknologi yang Digunakan
 
-| 🔧 Backend  | PHP 8.1+, CodeIgniter 4 |
+| Backend  | PHP 8.1+, CodeIgniter 4 |
 |------------|--------------------------|
-| 🎨 Frontend| HTML5, CSS, JavaScript, Bootstrap |
-| 🗃️ Database| MySQL                    |
-| 🌐 Server  | Apache (XAMPP) |
-| 🇬 Spreadsheet  | Google API |
+| Frontend| HTML5, CSS, JavaScript, Bootstrap |
+| Database| MySQL                    |
+| Server  | Apache (XAMPP) |
+| Spreadsheet  | Google API |
 
 
 ---
 
-## 🖼️ Tampilan Aplikasi
+## Tampilan Aplikasi
 
-### 🏠 Homepage
-![Homepage](/ss/homepage-1.png)
+### Homepage
+![Homepage](/ss/homepage.png)
 
 ---
 
-### 🔐 Login & 📝 Register (dengan dark mode)
+### Login & Register (dengan dark mode)
 <div align="center">
   <img src="/ss/login-1.png" width="48%">
   <img src="/ss/register-1.png" width="48%">
@@ -53,30 +53,30 @@
 
 ---
 
-## 👨‍💼 Halaman Admin
+## Halaman Admin
 
 | Fitur                     | Gambar |
 |--------------------------|--------|
-| 📊 Dashboard Admin        | ![Dashboard Admin](/ss/admin_dashboard-1.png) |
-| 👥 Kelola User            | ![Kelola User](/ss/kelola_pengguna-1.png) |
-| 📚 Kelola Ujian           | ![Kelola Ujian](/ss/kelola_ujian-1.png) |
-| ➕ Tambah Ujian           | ![Tambah Ujian](/ss/tambah_ujian-1.png) |
-| ➕ Tambah Soal            | ![Tambah Soal](/ss/tambah_soal-1.png) |
-| ✏️ Edit Ujian             | ![Edit Ujian](/ss/edit_ujian-1.png) |
-| ⚠️ Monitoring Pelanggaran | ![Monitoring Pelanggaran](/ss/monitoring_pelanggaran-1.png)|
+| Dashboard Admin        | ![Dashboard Admin](/ss/admin_dashboard.png) |
+| Kelola User            | ![Kelola User](/ss/kelola-user.png) |
+| Kelola Ujian           | ![Kelola Ujian](/ss/kelola-ujian.png) |
+| Tambah Ujian           | ![Tambah Ujian](/ss/tambah-ujian.png) |
+| Tambah Soal            | ![Tambah Soal](/ss/tambah-soal.png) |
+| Edit Ujian             | ![Edit Ujian](/ss/edit-ujian.png) |
+
 
 ---
 
-## 👨‍🎓 Halaman Peserta
+## Halaman Peserta
 
 | Fitur                  | Gambar |
 |-----------------------|--------|
-| 🏁 Dashboard Peserta   | ![Dashboard Peserta](/ss/dashboard_peserta-1.png) |
-| 📜 History Peserta   | ![Dashboard Peserta](/ss/peserta_riwayat-1.png) |
+| Dashboard Peserta   | ![Dashboard Peserta](/ss/peserta_dashboard.png) |
+| History Peserta   | ![Dashboard Peserta](/ss/history.png) |
 
 ---
 
-## 🗄️ Struktur Database
+## Struktur Database
 
 ```sql
 CREATE DATABASE examnation_db;
